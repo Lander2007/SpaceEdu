@@ -53,6 +53,13 @@ const getMoons = (id: string): MoonConfig[] => {
       { name: 'Proteus', distance: 3.2, size: 0.08, speed: 0.028, color: '#90a4ae' }
     ]
   }
+  if (id === 'pluto') {
+    return [
+      { name: 'Charon', distance: 2.2, size: 0.09, speed: 0.02, color: '#9e8c81' },
+      { name: 'Nix', distance: 2.8, size: 0.04, speed: 0.035, color: '#c5b8b1' },
+      { name: 'Hydra', distance: 3.4, size: 0.05, speed: 0.015, color: '#d1c7c2' }
+    ]
+  }
   return []
 }
 
@@ -132,65 +139,68 @@ export default function PlanetMesh({
 
   return (
     <group rotation={[0, 0, tilt]}>
-      {/* Planet sphere */}
-      <mesh ref={meshRef} material={material}>
-        <sphereGeometry args={[1.5, isMobile ? 32 : 64, isMobile ? 32 : 64]} />
-      </mesh>
+      {/* Symmetrically scale down planet body, atmosphere, and rings */}
+      <group scale={isMobile ? 0.7 : 0.8}>
+        {/* Planet sphere */}
+        <mesh ref={meshRef} material={material}>
+          <sphereGeometry args={[1.5, isMobile ? 32 : 64, isMobile ? 32 : 64]} />
+        </mesh>
 
-      {/* Atmosphere glow */}
-      <mesh>
-        <sphereGeometry args={[1.62, isMobile ? 16 : 32, isMobile ? 16 : 32]} />
-        <shaderMaterial
-          transparent
-          side={THREE.BackSide}
-          blending={THREE.AdditiveBlending}
-          depthWrite={false}
-          uniforms={useMemo(() => ({
-            uColor: { value: glowRGB }
-          }), [glowRGB])}
-          vertexShader={`
-            varying vec3 vNormal;
-            void main() {
-              vNormal = normalize(normalMatrix * normal);
-              gl_Position = projectionMatrix
-                          * modelViewMatrix
-                          * vec4(position, 1.0);
-            }
-          `}
-          fragmentShader={`
-            varying vec3 vNormal;
-            uniform vec3 uColor;
-            void main() {
-              float rim = 1.0 - abs(dot(vNormal, vec3(0,0,1)));
-              rim = pow(rim, 2.5);
-              gl_FragColor = vec4(uColor, rim * 0.45);
-            }
-          `}
-        />
-      </mesh>
+        {/* Atmosphere glow */}
+        <mesh>
+          <sphereGeometry args={[1.62, isMobile ? 16 : 32, isMobile ? 16 : 32]} />
+          <shaderMaterial
+            transparent
+            side={THREE.BackSide}
+            blending={THREE.AdditiveBlending}
+            depthWrite={false}
+            uniforms={useMemo(() => ({
+              uColor: { value: glowRGB }
+            }), [glowRGB])}
+            vertexShader={`
+              varying vec3 vNormal;
+              void main() {
+                vNormal = normalize(normalMatrix * normal);
+                gl_Position = projectionMatrix
+                            * modelViewMatrix
+                            * vec4(position, 1.0);
+              }
+            `}
+            fragmentShader={`
+              varying vec3 vNormal;
+              uniform vec3 uColor;
+              void main() {
+                float rim = 1.0 - abs(dot(vNormal, vec3(0,0,1)));
+                rim = pow(rim, 2.5);
+                gl_FragColor = vec4(uColor, rim * 0.45);
+              }
+            `}
+          />
+        </mesh>
 
-      {/* Saturn rings */}
-      {hasSaturnRings && (
-        <group rotation={[Math.PI / 2.2, 0, 0]}>
-          {[
-            { inner: 1.85, outer: 2.1,  opacity: 0.25, color: '#8B7355' },
-            { inner: 2.1,  outer: 2.9,  opacity: 0.9,  color: '#D4A855' },
-            { inner: 2.9,  outer: 3.05, opacity: 0.85, color: '#050505' },
-            { inner: 3.05, outer: 3.7,  opacity: 0.65, color: '#C49A3C' },
-            { inner: 3.75, outer: 3.85, opacity: 0.2,  color: '#AA8833' },
-          ].map((ring, i) => (
-            <mesh key={i} ref={i === 1 ? ringRef : undefined}>
-              <ringGeometry args={[ring.inner, ring.outer, 128]} />
-              <meshBasicMaterial
-                color={ring.color}
-                side={THREE.DoubleSide}
-                transparent
-                opacity={ring.opacity}
-              />
-            </mesh>
-          ))}
-        </group>
-      )}
+        {/* Saturn rings */}
+        {hasSaturnRings && (
+          <group rotation={[Math.PI / 2.2, 0, 0]}>
+            {[
+              { inner: 1.85, outer: 2.1,  opacity: 0.25, color: '#8B7355' },
+              { inner: 2.1,  outer: 2.9,  opacity: 0.9,  color: '#D4A855' },
+              { inner: 2.9,  outer: 3.05, opacity: 0.85, color: '#050505' },
+              { inner: 3.05, outer: 3.7,  opacity: 0.65, color: '#C49A3C' },
+              { inner: 3.75, outer: 3.85, opacity: 0.2,  color: '#AA8833' },
+            ].map((ring, i) => (
+              <mesh key={i} ref={i === 1 ? ringRef : undefined}>
+                <ringGeometry args={[ring.inner, ring.outer, 128]} />
+                <meshBasicMaterial
+                  color={ring.color}
+                  side={THREE.DoubleSide}
+                  transparent
+                  opacity={ring.opacity}
+                />
+              </mesh>
+            ))}
+          </group>
+        )}
+      </group>
 
       {/* Render moons */}
       {moons.map((moon) => (

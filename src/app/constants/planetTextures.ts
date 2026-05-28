@@ -8,6 +8,7 @@ export const PLANET_TEXTURES = {
   saturn: 'https://upload.wikimedia.org/wikipedia/commons/c/c7/Saturn_during_Equinox.jpg',
   uranus: 'https://upload.wikimedia.org/wikipedia/commons/3/3d/Uranus2.jpg',
   neptune: 'https://upload.wikimedia.org/wikipedia/commons/5/56/Neptune_Full.jpg',
+  pluto: 'https://upload.wikimedia.org/wikipedia/commons/e/ef/Pluto_in_True_Color_-_EHorizon.jpg',
 } as const;
 
 export type PlanetKey = keyof typeof PLANET_TEXTURES;
@@ -22,6 +23,7 @@ export const PLANET_SCALES: Record<PlanetKey, number> = {
   saturn: 0.92,
   uranus: 0.72,
   neptune: 0.7,
+  pluto: 0.24,
 };
 
 export const ORBIT_RADII: Partial<Record<PlanetKey, number>> = {
@@ -33,4 +35,5 @@ export const ORBIT_RADII: Partial<Record<PlanetKey, number>> = {
   saturn: 2.35,
   uranus: 2.55,
   neptune: 2.75,
+  pluto: 2.95,
 };

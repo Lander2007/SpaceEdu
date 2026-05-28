@@ -10,11 +10,41 @@
   scroll-snap-align: start;
   background:
     radial-gradient(ellipse at 50% 50%,
-      rgba(20,10,50,0.8) 0%, rgba(5,2,20,1) 60%, #00000a 100%),
+      rgba(15, 8, 40, 0.9) 0%, rgba(3, 1, 15, 1) 60%, #000005 100%),
     radial-gradient(ellipse at 80% 10%,
-      rgba(80,0,160,0.2) 0%, transparent 40%),
+      rgba(153, 51, 255, 0.15) 0%, transparent 40%),
     radial-gradient(ellipse at 20% 90%,
-      rgba(0,40,120,0.15) 0%, transparent 40%);
+      rgba(0, 255, 255, 0.1) 0%, transparent 40%);
+}
+
+/* Vertical scanline sweep */
+.section::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 6px;
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(0, 255, 255, 0.18) 50%,
+    transparent 100%
+  );
+  z-index: 4;
+  pointer-events: none;
+  animation: scanline 15s linear infinite;
+  opacity: 0.5;
+}
+
+/* Pulsing ambient light in the backdrop */
+.nebulaGlow {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: radial-gradient(circle at 50% 50%, rgba(153, 51, 255, 0.15) 0%, transparent 70%);
+  pointer-events: none;
+  animation: nebulaPulse 12s infinite alternate ease-in-out;
 }
 
 .canvasContainer {
@@ -51,8 +81,12 @@
   font-size: clamp(4rem, 12vw, 9.5rem);
   font-weight: 700;
   line-height: 0.95;
-  color: white;
-  text-shadow: 0 0 80px rgba(0, 255, 255, 0.15);
+  background: linear-gradient(120deg, #ffffff, #88f9f9, #ba75ff, #ffffff);
+  background-size: 300% 300%;
+  animation: gradientShift 12s ease infinite;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   opacity: 0;
   transform: translateY(15px);
   transition:
@@ -68,7 +102,9 @@
 .title em {
   font-style: italic;
   font-weight: 300;
-  color: rgba(255, 255, 255, 0.75);
+  color: rgba(255, 255, 255, 0.85);
+  -webkit-text-fill-color: rgba(255, 255, 255, 0.85);
+  filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.2));
 }
 
 .subtitle {
@@ -90,39 +126,58 @@
   transform: translateY(0);
 }
 
+/* Premium Sci-fi button style with chamfered corners and masking border */
 .cta {
-  display: inline-block;
-  padding: 15px 42px;
+  position: relative;
+  display: inline-flex;
+  padding: 14px 44px;
   font-family: var(--font-mono);
   font-size: 0.65rem;
   letter-spacing: 0.25em;
   text-transform: uppercase;
   text-decoration: none;
   color: #00ffff;
-  border: 1px solid rgba(0, 255, 255, 0.35);
-  border-radius: 40px;
   background: rgba(0, 255, 255, 0.04);
   backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
   box-shadow: 0 0 20px rgba(0, 255, 255, 0.06);
-  transition: all 0.4s ease;
-  animation: pulseBorder 2.5s infinite alternate;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   min-height: 44px;
-  display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 600;
+  clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+}
+
+.cta::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  padding: 1.5px;
+  background: linear-gradient(135deg, rgba(0, 255, 255, 0.55), rgba(153, 51, 255, 0.3));
+  -webkit-mask: 
+     linear-gradient(#fff 0 0) content-box, 
+     linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+          mask-composite: exclude;
+  pointer-events: none;
+  clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+  transition: all 0.4s ease;
 }
 
 .cta:hover {
   background: rgba(0, 255, 255, 0.12);
-  border-color: #00ffff;
-  color: white;
-  box-shadow: 0 0 40px rgba(0, 255, 255, 0.3);
-  transform: scale(1.03);
+  color: #ffffff;
+  box-shadow: 0 0 35px rgba(0, 255, 255, 0.25), inset 0 0 10px rgba(0, 255, 255, 0.1);
+  transform: translateY(-2px) scale(1.02);
+}
+
+.cta:hover::before {
+  background: linear-gradient(135deg, #00ffff, #9933ff);
 }
 
 .cta:active {
-  transform: scale(0.98);
+  transform: translateY(0) scale(0.98);
 }
 
 /* Spacecraft HUD brackets */
@@ -140,7 +195,8 @@
   position: absolute;
   width: 16px;
   height: 16px;
-  border-color: rgba(255, 255, 255, 0.15);
+  border-color: rgba(0, 255, 255, 0.25);
+  filter: drop-shadow(0 0 3px rgba(0, 255, 255, 0.2));
 }
 
 .cornerTL {
@@ -218,6 +274,33 @@
   display: flex;
   flex-direction: column;
   gap: 6px;
+}
+
+.statusMonitorRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: flex-end;
+  margin-top: 4px;
+}
+
+/* Waveform visualizer */
+.signalWaveform {
+  display: flex;
+  align-items: flex-end;
+  gap: 2.5px;
+  height: 9px;
+  margin-left: 2px;
+}
+
+.waveBar {
+  width: 2px;
+  height: 100%;
+  background: #00ffff;
+  border-radius: 1px;
+  animation: wavePulse 1s ease-in-out infinite alternate;
+  transform-origin: bottom;
+  box-shadow: 0 0 4px rgba(0, 255, 255, 0.5);
 }
 
 /* Rotating target reticle */
@@ -359,14 +442,46 @@
   }
 }
 
-@keyframes pulseBorder {
-  from {
-    border-color: rgba(0, 255, 255, 0.25);
-    box-shadow: 0 0 15px rgba(0, 255, 255, 0.03);
+@keyframes wavePulse {
+  0% {
+    transform: scaleY(0.2);
+    opacity: 0.4;
   }
-  to {
-    border-color: rgba(0, 255, 255, 0.55);
-    box-shadow: 0 0 25px rgba(0, 255, 255, 0.12);
+  100% {
+    transform: scaleY(1.2);
+    opacity: 1;
+  }
+}
+
+@keyframes scanline {
+  0% {
+    transform: translateY(-100%);
+  }
+  100% {
+    transform: translateY(100vh);
+  }
+}
+
+@keyframes nebulaPulse {
+  0% {
+    opacity: 0.4;
+    transform: scale(0.95);
+  }
+  100% {
+    opacity: 0.8;
+    transform: scale(1.15);
+  }
+}
+
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
   }
 }
 
@@ -387,7 +502,7 @@
   .title {
     font-size: clamp(2.2rem, 13vw, 5rem);
     line-height: 0.95;
-    text-shadow: 0 0 60px rgba(0, 255, 255, 0.12);
+    filter: drop-shadow(0 0 30px rgba(0, 255, 255, 0.12));
   }
   .subtitle {
     font-size: clamp(0.75rem, 1.3vw, 0.88rem);
@@ -422,7 +537,8 @@
     gap: 4px;
     font-size: 0.5rem;
   }
-  .bottomCoords span:nth-child(2) {
+  .bottomCoords span:nth-child(2),
+  .bottomCoords span:nth-child(4) {
     display: none;
   }
   .scrollHint {

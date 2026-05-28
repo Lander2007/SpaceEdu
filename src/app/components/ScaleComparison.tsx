@@ -10,6 +10,7 @@ export function ScaleComparison() {
     { name: 'Saturn', size: 180, color: '#F4E4C1' },
     { name: 'Uranus', size: 85, color: '#4FC3F7' },
     { name: 'Neptune', size: 82, color: '#1E90FF' },
+    { name: 'Pluto', size: 8, color: '#C39B78' },
   ];
 
   return (

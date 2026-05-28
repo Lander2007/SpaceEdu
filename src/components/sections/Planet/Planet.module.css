@@ -1,40 +1,42 @@
 .section {
-  position: relative;
-  width: 100%;
-  height: 100vh;
-  min-height: 100svh;
-  overflow: hidden;
+  position:          relative;
+  width:             100%;
+  height:            100vh;
+  min-height:        100svh;
+  max-height:        100svh;
+  overflow:          hidden;  /* everything stays inside */
+  display:           grid;
+  grid-template-rows: 1fr auto; /* planet top, moons bottom */
   scroll-snap-align: start;
-  scroll-snap-stop: always;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
+  scroll-snap-stop:  always;
 }
 
 .overlay {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
+  position:       absolute;
+  inset:          0;
+  background:     linear-gradient(
     to bottom,
-    rgba(0, 0, 0, 0.1) 0%,
-    transparent 30%,
-    transparent 60%,
-    rgba(0, 0, 0, 0.4) 100%
+    rgba(0,0,0,0.05) 0%,
+    transparent      20%,
+    transparent      50%,
+    rgba(0,0,0,0.55) 75%,
+    rgba(0,0,0,0.75) 100%
   );
   pointer-events: none;
-  z-index: 3;
+  z-index:        3;
 }
 
 .content {
-  position: relative;
-  z-index: 10;
-  display: flex;
+  position:       relative;
+  z-index:        10;
+  display:        flex;
   flex-direction: column;
-  align-items: center;
-  text-align: center;
-  padding-top: 115px;
-  width: 100%;
+  align-items:    center;
+  text-align:     center;
+  padding-top:    clamp(60px, 8vh, 80px);
+  pointer-events: none;
+  grid-row:       1;
+  width:          100%;
   opacity: 0;
   transform: translateY(24px);
   transition:
@@ -58,7 +60,7 @@
 
 .title {
   font-family: var(--font-display);
-  font-size: clamp(4rem, 12vw, 11rem);
+  font-size: clamp(3rem, 9vw, 8rem) !important;
   font-weight: 700;
   line-height: 0.9;
   color: white;
@@ -69,12 +71,12 @@
 
 .subtitle {
   font-family: var(--font-body);
-  font-size: clamp(0.78rem, 1.2vw, 0.95rem);
+  font-size:   clamp(0.72rem, 1vw, 0.85rem) !important;
   font-weight: 300;
   color: rgba(255, 255, 255, 0.65);
-  max-width: 500px;
+  max-width:   420px;
   line-height: 1.8;
-  margin-top: 14px;
+  margin-top:  8px !important;
   padding: 0 20px;
   letter-spacing: 0.01em;
 }
@@ -99,6 +101,7 @@
   align-items: center;
   justify-content: center;
   user-select: none;
+  pointer-events: auto;
 }
 .cta:hover {
   background: rgba(255, 255, 255, 0.15);
@@ -112,11 +115,12 @@
 .stats {
   display: flex;
   flex-direction: row;
-  gap: 12px;
-  margin-top: 28px;
+  gap:        8px !important;
+  margin-top: 12px !important;
   flex-wrap: wrap;
   justify-content: center;
   padding: 0 20px;
+  pointer-events: auto;
 }
 
 .statCard {
@@ -124,8 +128,8 @@
   border: 1px solid rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(12px);
   border-radius: 12px;
-  padding: 14px 22px;
-  min-width: 110px;
+  padding: 8px 12px !important;
+  min-width: 70px !important;
   text-align: center;
   opacity: 0;
   animation: fadeUp 0.6s forwards ease;
@@ -151,7 +155,7 @@
 
 .statValue {
   font-family: var(--font-mono);
-  font-size: clamp(0.8rem, 1.4vw, 1.05rem);
+  font-size: clamp(0.7rem, 1.2vw, 0.85rem) !important;
   color: rgba(255, 255, 255, 0.95);
   font-weight: 700;
   letter-spacing: 0.01em;
@@ -159,7 +163,7 @@
 
 .statLabel {
   font-family: var(--font-body);
-  font-size: 0.54rem;
+  font-size: 0.5rem !important;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: rgba(255, 255, 255, 0.45);
@@ -207,94 +211,382 @@
 @media (max-width: 768px) {
 
   .section {
+    grid-template-rows: 1fr auto;
     height:     100svh;
-    min-height: 100svh;
+    max-height: 100svh;
   }
 
-  /* Planet canvas — full screen behind content */
-  .canvasWrapper {
-    position: absolute !important;
-    inset:    0 !important;
-    z-index:  1 !important;
-  }
-
-  /* Content sits on top of planet */
   .content {
-    padding-top: 72px !important;
-    z-index:     10 !important;
+    padding-top: 68px !important;
   }
 
-  /* Title scales down for long names (NEPTUNE etc) */
   .title {
-    font-size: clamp(2.8rem, 15vw, 5rem) !important;
-    padding:   0 16px;
-    word-break:break-word;
+    font-size: clamp(2.5rem, 14vw, 4rem) !important;
   }
 
-  /* Subtitle more compact */
-  .subtitle {
-    font-size:   0.8rem !important;
-    padding:     0 24px !important;
-    margin-top:  10px !important;
-    max-width:   100% !important;
+  /* Moons panel shorter on mobile */
+  .moonsWrapper {
+    max-height: 38vh;
+    overflow:   hidden;
   }
 
-  /* CTA button */
-  .cta {
-    padding:   11px 28px !important;
-    font-size: 0.65rem !important;
-    margin-top:14px !important;
-  }
-
-  /* Stats: horizontal scroll row */
+  /* Stats hidden on mobile to save space */
   .stats {
-    flex-wrap:   nowrap !important;
-    overflow-x:  auto !important;
-    justify-content: flex-start !important;
-    padding:     0 20px 8px !important;
-    margin-top:  14px !important;
-    gap:         8px !important;
-    width:       100% !important;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-  }
-  .stats::-webkit-scrollbar { display: none; }
-
-  .statCard {
-    flex-shrink: 0 !important;
-    min-width:   78px !important;
-    padding:     10px 10px !important;
+    display: none !important;
   }
 
-  .statValue {
-    font-size: 0.8rem !important;
-  }
-
-  .statLabel {
-    font-size: 0.52rem !important;
-  }
-
-  /* Hide neighbors on mobile */
-  .neighbor { display: none !important; }
-
-  /* Planet canvas smaller on mobile */
-  :global(.planet-canvas) {
-    width:  85vw !important;
-    height: 85vw !important;
-    bottom: -18% !important;
-  }
-
-  /* Saturn needs more space */
-  :global(#saturn .planet-canvas) {
-    width:  100vw !important;
-    height: 100vw !important;
-    bottom: -22% !important;
+  /* Subtitle hidden on mobile */
+  .subtitle {
+    display: none !important;
   }
 }
 
-/* ── Tablet ───────────────────────────────── */
+/* Tablet */
 @media (min-width: 769px) and (max-width: 1024px) {
   .title {
-    font-size: clamp(4rem, 10vw, 8rem) !important;
+    font-size: clamp(3rem, 8vw, 6rem) !important;
   }
+}
+
+/* ── Holographic Scan HUD Target Brackets ── */
+.scannerHUD {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(1.15);
+  width: min(70vw, 380px);
+  height: min(70vw, 380px);
+  z-index: 4;
+  pointer-events: none;
+  border: 1px solid rgba(0, 255, 255, 0.05);
+  opacity: 0;
+  transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  border-radius: 4px;
+}
+
+.scannerHUDActive {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+.bracketTL,
+.bracketTR,
+.bracketBL,
+.bracketBR {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border-color: #00ffff;
+  box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+}
+
+.bracketTL { top: -2px; left: -2px; border-top: 2px solid; border-left: 2px solid; }
+.bracketTR { top: -2px; right: -2px; border-top: 2px solid; border-right: 2px solid; }
+.bracketBL { bottom: -2px; left: -2px; border-bottom: 2px solid; border-left: 2px solid; }
+.bracketBR { bottom: -2px; right: -2px; border-bottom: 2px solid; border-right: 2px solid; }
+
+.scanLineBox {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, transparent, rgba(0, 255, 255, 0.08) 50%, transparent);
+  animation: scanHUD 2.5s ease-in-out infinite;
+}
+
+@keyframes scanHUD {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100%); }
+}
+
+/* Floating target readouts inside bracket corners */
+.hudStatsLeft {
+  position: absolute;
+  left: 14px;
+  top: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-family: var(--font-mono);
+  font-size: 0.52rem;
+  letter-spacing: 0.08em;
+  color: rgba(0, 255, 255, 0.55);
+  text-align: left;
+}
+
+.hudStatsRight {
+  position: absolute;
+  right: 14px;
+  top: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-family: var(--font-mono);
+  font-size: 0.52rem;
+  letter-spacing: 0.08em;
+  color: rgba(0, 255, 255, 0.55);
+  text-align: right;
+}
+
+.scanProgress {
+  position: absolute;
+  bottom: -32px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.15em;
+  color: #00ffff;
+  text-shadow: 0 0 8px rgba(0, 255, 255, 0.5);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+/* ── Scan Telemetry Facts Container ── */
+.scanContainer {
+  margin-top: 20px;
+  width: 100%;
+  max-width: 620px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 0 20px;
+  z-index: 12;
+}
+
+.progressBarContainer {
+  width: 100%;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+  overflow: hidden;
+  position: relative;
+}
+
+.progressBar {
+  height: 100%;
+  background: linear-gradient(90deg, #00ffff, #9933ff);
+  transition: width 0.1s linear;
+  box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+}
+
+.scanFacts {
+  width: 100%;
+  background: rgba(3, 4, 15, 0.85);
+  border: 1px solid rgba(0, 255, 255, 0.15);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border-radius: 12px;
+  padding: 18px 24px;
+  box-shadow: 0 16px 45px rgba(0, 0, 0, 0.6), 0 0 25px rgba(0, 255, 255, 0.06);
+  opacity: 0;
+  transform: translateY(12px);
+  animation: slideUpFade 0.6s forwards cubic-bezier(0.16, 1, 0.3, 1);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  text-align: left;
+}
+
+.scanFactsHeader {
+  grid-column: span 2;
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(0, 255, 255, 0.15);
+  padding-bottom: 6px;
+  margin-bottom: 2px;
+  font-family: var(--font-mono);
+  font-size: 0.54rem;
+  color: #00ffff;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.scanFactsFooter {
+  grid-column: span 2;
+  display: flex;
+  justify-content: space-between;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding-top: 8px;
+  margin-top: 2px;
+  font-family: var(--font-mono);
+  font-size: 0.54rem;
+  color: rgba(255, 255, 255, 0.4);
+  letter-spacing: 0.1em;
+}
+
+.factColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+@keyframes slideUpFade {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.factRow {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.factLabel {
+  font-family: var(--font-body);
+  font-size: 0.52rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.4);
+  font-weight: 600;
+}
+
+.factValue {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: #ffffff;
+  letter-spacing: 0.01em;
+}
+
+.abortCta {
+  margin-top: 8px;
+  font-family: var(--font-mono);
+  font-size: 0.54rem;
+  letter-spacing: 0.12em;
+  color: rgba(255, 255, 255, 0.4);
+  background: none;
+  border: none;
+  cursor: none;
+  text-transform: uppercase;
+  transition: color 0.3s, transform 0.2s;
+  outline: none;
+  pointer-events: auto;
+}
+
+.abortCta:hover {
+  color: #00ffff;
+  transform: scale(1.05);
+}
+
+@media (max-width: 768px) {
+  .scannerHUD {
+    width: min(80vw, 240px);
+    height: min(80vw, 240px);
+  }
+  .hudStatsLeft, .hudStatsRight {
+    font-size: 0.46rem;
+    gap: 2px;
+  }
+  .scanFacts {
+    grid-template-columns: 1fr;
+    padding: 12px 16px;
+    gap: 10px;
+  }
+  .scanFactsHeader, .scanFactsFooter {
+    grid-column: span 1;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .factValue {
+    font-size: 0.68rem;
+  }
+}
+
+.dismissCta {
+  margin-top: 20px;
+  padding: 14px 40px;
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #ff3366;
+  background: rgba(255, 51, 102, 0.08);
+  border: 1px solid rgba(255, 51, 102, 0.25);
+  border-radius: 40px;
+  backdrop-filter: blur(12px);
+  cursor: none;
+  transition: all 0.4s ease;
+  font-weight: 600;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+  pointer-events: auto;
+}
+
+.dismissCta:hover {
+  background: rgba(255, 51, 102, 0.15);
+  box-shadow: 0 0 40px rgba(255, 51, 102, 0.25);
+  transform: translateY(-2px);
+}
+
+.dismissCta:active {
+  transform: translateY(0px);
+}
+
+/* ── Content & Title layouts during active scan ── */
+.contentScanning {
+  padding-top: 60px !important;
+}
+
+.titleScanning {
+  font-size: clamp(2rem, 6vw, 4.5rem) !important;
+}
+
+/* ── Telemetry Header Right & Close button ── */
+.headerRight {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.classInfo {
+  opacity: 0.85;
+}
+
+.closeCardBtn {
+  background: none;
+  border: none;
+  color: rgba(0, 255, 255, 0.6);
+  font-size: 0.8rem;
+  cursor: none;
+  padding: 2px 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s, transform 0.2s;
+  border-radius: 4px;
+  pointer-events: auto;
+}
+
+.closeCardBtn:hover {
+  color: #ff3366;
+  background: rgba(255, 51, 102, 0.1);
+  transform: scale(1.15);
+}
+
+/* Planet canvas stays absolute behind content */
+.canvasWrapper {
+  position:   absolute;
+  inset:      0;
+  z-index:    1;
+  pointer-events: auto;
+}
+
+/* Moons panel pushed below the fold slightly */
+.moonsWrapper {
+  position:        relative;
+  z-index:         10;
+  grid-row:        2;
+  width:           100%;
+  padding-bottom:  clamp(12px, 2vh, 20px);
+  background:      linear-gradient(
+    to top,
+    rgba(0,0,0,0.5) 0%,
+    transparent     100%
+  );
+  pointer-events:  auto;
 }

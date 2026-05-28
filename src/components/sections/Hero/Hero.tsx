@@ -3,6 +3,201 @@ import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import * as THREE from 'three'
 import styles from './Hero.module.css'
 
+// Zero-dependency Web Audio API sound generator for tactical UI feel
+const playBeep = (freq = 800, type: OscillatorType = 'sine', duration = 0.08, vol = 0.05) => {
+  try {
+    const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext
+    if (!AudioContextClass) return
+    const ctx = new AudioContextClass()
+    const osc = ctx.createOscillator()
+    const gain = ctx.createGain()
+    
+    osc.type = type
+    osc.frequency.setValueAtTime(freq, ctx.currentTime)
+    
+    gain.gain.setValueAtTime(vol, ctx.currentTime)
+    gain.gain.exponentialRampToValueAtTime(0.00001, ctx.currentTime + duration)
+    
+    osc.connect(gain)
+    gain.connect(ctx.destination)
+    
+    osc.start()
+    osc.stop(ctx.currentTime + duration)
+  } catch (e) {
+    // Audio context might be blocked or unsupported by browser autoplays
+  }
+}
+
+function OrbitingNode({ radius, speed, color, offset = 0 }: { radius: number; speed: number; color: string; offset?: number }) {
+  const nodeRef = useRef<THREE.Mesh>(null)
+  
+  useFrame((state) => {
+    const elapsed = state.clock.getElapsedTime()
+    const angle = elapsed * speed + offset
+    if (nodeRef.current) {
+      nodeRef.current.position.x = Math.cos(angle) * radius
+      nodeRef.current.position.y = Math.sin(angle) * radius
+    }
+  })
+
+  return (
+    <mesh ref={nodeRef}>
+      <sphereGeometry args={[0.05, 8, 8]} />
+      <meshBasicMaterial 
+        color={color} 
+        transparent 
+        opacity={0.8}
+        blending={THREE.AdditiveBlending}
+      />
+    </mesh>
+  )
+}
+
+function HologramGlobe() {
+  const groupRef = useRef<THREE.Group>(null)
+  const planetRef = useRef<THREE.Mesh>(null)
+  const outerPlanetRef = useRef<THREE.Mesh>(null)
+  const ring1Ref = useRef<THREE.Mesh>(null)
+  const ring2Ref = useRef<THREE.Mesh>(null)
+  const ring3Ref = useRef<THREE.Mesh>(null)
+  
+  const [scale, setScale] = useState(0)
+
+  useEffect(() => {
+    // Smoothly scale up the hologram on mount
+    let start: number | null = null
+    const duration = 2200 
+    const animate = (timestamp: number) => {
+      if (!start) start = timestamp
+      const progress = Math.min((timestamp - start) / duration, 1)
+      const ease = 1 - Math.pow(1 - progress, 4) // Quartic ease out
+      setScale(ease * 1.15) 
+      if (progress < 1) {
+        requestAnimationFrame(animate)
+      }
+    }
+    requestAnimationFrame(animate)
+  }, [])
+
+  useFrame((state) => {
+    const elapsed = state.clock.getElapsedTime()
+
+    // Slow planet rotations
+    if (planetRef.current) {
+      planetRef.current.rotation.y = elapsed * 0.05
+      planetRef.current.rotation.x = elapsed * 0.02
+    }
+    if (outerPlanetRef.current) {
+      outerPlanetRef.current.rotation.y = -elapsed * 0.03
+      outerPlanetRef.current.rotation.z = elapsed * 0.01
+    }
+
+    // Tilted ring rotations
+    if (ring1Ref.current) {
+      ring1Ref.current.rotation.z = elapsed * 0.12
+    }
+    if (ring2Ref.current) {
+      ring2Ref.current.rotation.z = -elapsed * 0.08
+    }
+    if (ring3Ref.current) {
+      ring3Ref.current.rotation.z = elapsed * 0.15
+    }
+
+    // Interactive pointer parallax (tilting the whole assembly)
+    if (groupRef.current) {
+      const targetRotationX = state.pointer.y * 0.35
+      const targetRotationY = state.pointer.x * 0.35
+      
+      groupRef.current.rotation.x += (targetRotationX - groupRef.current.rotation.x) * 0.05
+      groupRef.current.rotation.y += (targetRotationY - groupRef.current.rotation.y) * 0.05
+    }
+  })
+
+  return (
+    <group ref={groupRef} scale={scale} position={[0, -0.4, -4.5]}>
+      {/* Central Planet Hologram (Dual-layered wireframe) */}
+      <mesh ref={planetRef}>
+        <icosahedronGeometry args={[2.0, 2]} />
+        <meshBasicMaterial 
+          wireframe 
+          color="#00ffff" 
+          transparent 
+          opacity={0.14} 
+          blending={THREE.AdditiveBlending}
+        />
+      </mesh>
+      
+      <mesh ref={outerPlanetRef}>
+        <icosahedronGeometry args={[2.02, 1]} />
+        <meshBasicMaterial 
+          wireframe 
+          color="#7de8e8" 
+          transparent 
+          opacity={0.06} 
+          blending={THREE.AdditiveBlending}
+        />
+      </mesh>
+
+      {/* Internal core sphere for solid occlusion/depth */}
+      <mesh>
+        <sphereGeometry args={[1.9, 32, 32]} />
+        <meshBasicMaterial 
+          color="#020412" 
+          transparent 
+          opacity={0.45} 
+        />
+      </mesh>
+
+      {/* Concentric Tilted Orbital Rings & Satellites */}
+      {/* Equatorial Ring */}
+      <group rotation={[Math.PI / 2.2, 0, 0]}>
+        <mesh ref={ring1Ref}>
+          <ringGeometry args={[2.55, 2.57, 64]} />
+          <meshBasicMaterial 
+            color="#00ffff" 
+            transparent 
+            opacity={0.25} 
+            side={THREE.DoubleSide}
+            blending={THREE.AdditiveBlending}
+          />
+        </mesh>
+        <OrbitingNode radius={2.56} speed={0.3} color="#00ffff" />
+        <OrbitingNode radius={2.56} speed={0.3} color="#00ffff" offset={Math.PI} />
+      </group>
+
+      {/* Tilted Ring 2 */}
+      <group rotation={[Math.PI / 6, Math.PI / 4, 0]}>
+        <mesh ref={ring2Ref}>
+          <ringGeometry args={[2.9, 2.915, 64]} />
+          <meshBasicMaterial 
+            color="#9933ff" 
+            transparent 
+            opacity={0.2} 
+            side={THREE.DoubleSide}
+            blending={THREE.AdditiveBlending}
+          />
+        </mesh>
+        <OrbitingNode radius={2.907} speed={-0.25} color="#9933ff" />
+      </group>
+
+      {/* Tilted Ring 3 */}
+      <group rotation={[-Math.PI / 4, -Math.PI / 5, 0]}>
+        <mesh ref={ring3Ref}>
+          <ringGeometry args={[3.25, 3.26, 64]} />
+          <meshBasicMaterial 
+            color="#00ffff" 
+            transparent 
+            opacity={0.15} 
+            side={THREE.DoubleSide}
+            blending={THREE.AdditiveBlending}
+          />
+        </mesh>
+        <OrbitingNode radius={3.255} speed={0.18} color="#00ffff" offset={Math.PI / 2} />
+      </group>
+    </group>
+  )
+}
+
 function Starfield() {
   const pointsRef = useRef<THREE.Points>(null)
 
@@ -115,22 +310,29 @@ function CameraRig() {
 
 function Typewriter({ text, delay = 35, callback }: { text: string; delay?: number; callback?: () => void }) {
   const [displayedText, setDisplayedText] = useState('')
+  const callbackRef = useRef(callback)
+
+  useEffect(() => {
+    callbackRef.current = callback
+  }, [callback])
 
   useEffect(() => {
     let index = 0
+    let current = ''
     setDisplayedText('')
     const interval = setInterval(() => {
       if (index < text.length) {
-        setDisplayedText((prev) => prev + text.charAt(index))
+        current += text.charAt(index)
+        setDisplayedText(current)
         index++
       } else {
         clearInterval(interval)
-        if (callback) callback()
+        if (callbackRef.current) callbackRef.current()
       }
     }, delay)
 
     return () => clearInterval(interval)
-  }, [text, delay, callback])
+  }, [text, delay])
 
   return <span>{displayedText}</span>
 }
@@ -145,17 +347,50 @@ function TelemetryLogs() {
     'STATUS: READY FOR DEPARTURE'
   ], [])
 
+  const extraLogs = useMemo(() => [
+    'PROPULSION SYSTEM: ACTIVE',
+    'THERMAL SHIELDS: NOMINAL',
+    'GRAVITY TENSOR: BALANCED [1.0G]',
+    'WARP COILS: STEADY STATE',
+    'REACTOR CORE: 104% STABLE',
+    'OXYGEN RATIO: 20.9% NORMAL',
+    'HULL INTEGRITY: 99.8%',
+    'RADAR SWEEP: CLEAR SECTOR',
+    'COGNITIVE DRIFT: 0.01% CORR',
+    'GRID REALIGNMENT: VERIFIED',
+    'NAV-COMPUTER: SYNCING COORDS',
+    'WARP BUFFER: CHARGING [87%]',
+    'COLLISION DETECTOR: SCANNING...',
+    'QUANTUM DECOHERENCE: 0.00%',
+    'GRAVITATIONAL WAVES: MINIMAL'
+  ], [])
+
   useEffect(() => {
     let index = 0
+    let timer: any
+    
     const addLog = () => {
       if (index < rawLogs.length) {
         setLogs((prev) => [...prev, rawLogs[index]])
         index++
-        setTimeout(addLog, 900 + Math.random() * 500)
+        timer = setTimeout(addLog, 900 + Math.random() * 500)
+      } else {
+        // Stream periodic extra diagnostic logs
+        const streamLogs = () => {
+          const randomLog = extraLogs[Math.floor(Math.random() * extraLogs.length)]
+          setLogs((prev) => {
+            const nextLogs = prev.length >= 6 ? prev.slice(1) : prev
+            return [...nextLogs, randomLog]
+          })
+          timer = setTimeout(streamLogs, 3000 + Math.random() * 3000)
+        }
+        timer = setTimeout(streamLogs, 4000)
       }
     }
+    
     addLog()
-  }, [rawLogs])
+    return () => clearTimeout(timer)
+  }, [rawLogs, extraLogs])
 
   return (
     <div className={styles.telemetryLogs}>
@@ -164,16 +399,69 @@ function TelemetryLogs() {
           <span className={styles.logBullet}>&gt;</span> {log}
         </div>
       ))}
-      {logs.length < rawLogs.length && <span className={styles.blinkCursor}>_</span>}
+      <span className={styles.blinkCursor}>_</span>
     </div>
   )
 }
 
 export default function Hero() {
   const [showSubtitle, setShowSubtitle] = useState(false)
+  const [range, setRange] = useState(1482000320)
+  const [velocity, setVelocity] = useState(28400)
+  const [missionTime, setMissionTime] = useState({ d: 4, h: 16, m: 35, s: 12 })
+
+  useEffect(() => {
+    // Dynamic countdown for range
+    const rangeInterval = setInterval(() => {
+      setRange(r => r - Math.floor(Math.random() * 5 + 15))
+    }, 200)
+
+    // Minor fluctuations for velocity
+    const velocityInterval = setInterval(() => {
+      setVelocity(v => 28400 + Math.floor((Math.random() - 0.5) * 12))
+    }, 800)
+
+    // Ticking mission clock
+    const missionInterval = setInterval(() => {
+      setMissionTime(prev => {
+        let ns = prev.s + 1
+        let nm = prev.m
+        let nh = prev.h
+        let nd = prev.d
+        if (ns >= 60) {
+          ns = 0
+          nm += 1
+        }
+        if (nm >= 60) {
+          nm = 0
+          nh += 1
+        }
+        if (nh >= 24) {
+          nh = 0
+          nd += 1
+        }
+        return { d: nd, h: nh, m: nm, s: ns }
+      })
+    }, 1000)
+
+    return () => {
+      clearInterval(rangeInterval)
+      clearInterval(velocityInterval)
+      clearInterval(missionInterval)
+    }
+  }, [])
+
+  const handleCtaHover = () => {
+    playBeep(1200, 'sine', 0.05, 0.02)
+  }
 
   const handleBeginExploration = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault()
+    
+    // Play initiation chime
+    playBeep(880, 'triangle', 0.25, 0.06)
+    setTimeout(() => playBeep(1320, 'sine', 0.4, 0.04), 100)
+
     // Initiate procedural synth
     window.dispatchEvent(new CustomEvent('start-ambient-synth'))
     // Scroll down to the first section (Sun)
@@ -185,11 +473,15 @@ export default function Hero() {
 
   return (
     <section id="hero" className={styles.section}>
-      {/* 3D Starfield & Coordinate Grid */}
+      {/* Subtle pulsing nebular backdrop */}
+      <div className={styles.nebulaGlow} />
+
+      {/* 3D Starfield, Grid & Hologram Globe */}
       <div className={styles.canvasContainer}>
         <Canvas camera={{ position: [0, 0.5, 12], fov: 45 }}>
           <Suspense fallback={null}>
             <Starfield />
+            <HologramGlobe />
             <NavigationGrid />
             <CameraRig />
           </Suspense>
@@ -212,10 +504,17 @@ export default function Hero() {
 
       {/* Navigation telemetry (Top Right) */}
       <div className={styles.rightStatus}>
-        <span>RANGE: 1.48B KM</span>
-        <span>VELOCITY: 28,400 KM/H</span>
+        <span>RANGE: {range.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")} KM</span>
+        <span>VELOCITY: {velocity.toLocaleString()} KM/H</span>
         <span>SECTOR: SOL-SYS</span>
-        <span className={styles.blinkCursor} style={{ color: '#00ffff' }}>● MONITORING ACTIVE</span>
+        <div className={styles.statusMonitorRow}>
+          <span className={styles.blinkCursor} style={{ color: '#00ffff' }}>● MONITORING ACTIVE</span>
+          <div className={styles.signalWaveform}>
+            {[0, 1, 2, 3, 4].map((i) => (
+              <div key={i} className={styles.waveBar} style={{ animationDelay: `${i * 0.15}s` }} />
+            ))}
+          </div>
+        </div>
       </div>
 
       {/* Rotating central vector reticle */}
@@ -255,6 +554,7 @@ export default function Hero() {
           <a 
             href="#sun" 
             onClick={handleBeginExploration} 
+            onMouseEnter={handleCtaHover}
             className={styles.cta} 
             style={{ marginTop: '28px' }}
           >
@@ -268,6 +568,10 @@ export default function Hero() {
         <span>LAT. 34.0522° N / LONG. 118.2437° W</span>
         <span style={{ margin: '0 12px', opacity: 0.3 }}>|</span>
         <span>GALACTIC POS: RA 17H 45M 40S / DEC -29°00'28"</span>
+        <span style={{ margin: '0 12px', opacity: 0.3 }}>|</span>
+        <span style={{ color: '#00ffff', textShadow: '0 0 8px rgba(0, 255, 255, 0.4)' }}>
+          ELAPSED: T+ {String(missionTime.d).padStart(3, '0')}D:{String(missionTime.h).padStart(2, '0')}H:{String(missionTime.m).padStart(2, '0')}M:{String(missionTime.s).padStart(2, '0')}S
+        </span>
       </div>
 
       {/* Scroll hint */}

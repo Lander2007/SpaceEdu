@@ -136,6 +136,15 @@ export function CinematicGalaxyAndPlanets() {
         orbitalPeriod: '165 years',
         moons: 16,
       },
+      {
+        name: 'PLUTO',
+        fact: 'The beloved dwarf planet. Composed of rock and ice.',
+        patternType: 'pluto',
+        size: 240,
+        distance: '5.91B km',
+        orbitalPeriod: '248 years',
+        moons: 5,
+      },
     ],
     []
   );

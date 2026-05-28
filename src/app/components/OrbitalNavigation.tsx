@@ -11,6 +11,7 @@ const planets = [
   { id: 'saturn', label: '♄', name: 'Saturn' },
   { id: 'uranus', label: '♅', name: 'Uranus' },
   { id: 'neptune', label: '♆', name: 'Neptune' },
+  { id: 'pluto', label: '♇', name: 'Pluto' },
   { id: 'outer', label: '∞', name: 'Beyond' },
   { id: 'black-holes', label: '🕳', name: 'Singularity' },
 ];

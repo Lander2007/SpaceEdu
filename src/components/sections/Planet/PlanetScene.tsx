@@ -17,17 +17,17 @@ export default function PlanetScene({ planet, isVisible }: Props) {
   return (
     <Canvas
       gl={{
-        antialias:       !isMobile,
+        antialias:       true,
         alpha:           true,
         powerPreference: 'high-performance',
       }}
       dpr={[1, isMobile ? 1.5 : 2]}
-      performance={{ min: 0.5 }}
-      camera={{ position: [0, 1.5, 5.5], fov: 45 }}
+      camera={{ position: [0, 1.2, 5.0], fov: 45 }}
       style={{
-        position: 'absolute',
-        inset:    0,
-        zIndex:   1,
+        position:      'absolute',
+        inset:         0,
+        zIndex:        2,
+        pointerEvents: 'auto',
       }}
     >
       {/* Lighting */}
@@ -70,7 +70,14 @@ export default function PlanetScene({ planet, isVisible }: Props) {
         />
       </Suspense>
 
-      <OrbitControls enableZoom={false} enablePan={false} />
+      <OrbitControls
+        enableZoom={false}
+        enablePan={false}
+        enableRotate={true}
+        rotateSpeed={0.6}
+        autoRotate={false}
+        makeDefault
+      />
     </Canvas>
   )
 }

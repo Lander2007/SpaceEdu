@@ -246,4 +246,28 @@ export const planets: PlanetData[] = [
       moons:    '16',
     },
   },
+  {
+    id:         'pluto',
+    name:       'PLUTO',
+    subtitle:   'The beloved dwarf planet. Composed of rock and ice with a heart-shaped nitrogen glacier.',
+    color:      '#C39B78',
+    glowColor:  'rgba(195,155,120,0.3)',
+    bgGradient: `
+      radial-gradient(ellipse at 65% 20%,
+        rgba(150,110,80,0.2) 0%, transparent 50%),
+      radial-gradient(ellipse at 35% 85%,
+        rgba(100,70,50,0.15) 0%, transparent 45%),
+      radial-gradient(ellipse at 50% 50%,
+        rgba(18,12,8,1) 0%, rgba(6,4,2,1) 100%)
+    `,
+    tilt:        2.06,
+    autoSpeed:   0.0008,
+    texturePath: '/textures/pluto.jpg',
+    stats: {
+      diameter: '2,376 km',
+      distance: '5.91B km',
+      orbital:  '248 years',
+      moons:    '5',
+    },
+  },
 ]

@@ -14,6 +14,7 @@ const SECTIONS = [
   { id: 'uranus',      label: 'Uranus',         hudLabel: 'URANUS ICE',      color: '#7DE8E8' },
   { id: 'neptune',     label: 'Neptune',        hudLabel: 'NEPTUNE STORM',   color: '#3F54BA' },
   { id: 'miller',      label: 'Miller',         hudLabel: 'MILLERS PLANET',  color: '#00a0ff' },
+  { id: 'pluto',       label: 'Pluto',          hudLabel: 'PLUTO FRONTIER',  color: '#C39B78' },
   { id: 'galaxy',      label: 'Galaxy',         hudLabel: 'MILKY WAY',       color: '#7de8e8' },
   { id: 'scale',       label: 'Scale',          hudLabel: 'SCALE COMPARISON',color: '#ffffff' },
   { id: 'black-holes', label: 'Black Holes',    hudLabel: 'GARGANTUA',       color: '#9933FF' },
@@ -41,6 +42,7 @@ const NAV_GROUPS = [
       { id: 'uranus', label: 'Uranus', color: '#7DE8E8' },
       { id: 'neptune', label: 'Neptune', color: '#3F54BA' },
       { id: 'miller', label: 'Miller\'s Planet', color: '#00a0ff' },
+      { id: 'pluto', label: 'Pluto', color: '#C39B78' },
       { id: 'galaxy', label: 'Milky Way', color: '#7de8e8' },
     ]
   },
@@ -53,6 +55,27 @@ const NAV_GROUPS = [
     ]
   }
 ]
+
+const SECTION_DISTANCES: Record<string, string> = {
+  hero: '0 KM',
+  sun: '149.6M KM',
+  mercury: '91.7M KM',
+  venus: '41.4M KM',
+  earth: '0 KM',
+  mars: '78.3M KM',
+  asteroids: '329.0M KM',
+  jupiter: '628.7M KM',
+  saturn: '1.27B KM',
+  wormhole: 'Warp Horizon',
+  uranus: '2.72B KM',
+  neptune: '4.35B KM',
+  miller: '12.4B KM',
+  pluto: '5.91B KM',
+  galaxy: '26K Light-Years',
+  scale: 'Universal Range',
+  'black-holes': '10K Light-Years',
+  concept: 'Mission End'
+}
 
 export default function Navbar() {
   const [scrolled,     setScrolled]     = useState(false)
@@ -392,9 +415,9 @@ export default function Navbar() {
           left: 50%;
           transform: translateX(-50%);
           height: 44px;
-          width: 250px;
+          width: 390px;
           border-radius: 22px;
-          background: rgba(3, 5, 22, 0.92);
+          background: linear-gradient(180deg, rgba(255, 255, 255, 0.05) 0%, rgba(3, 5, 22, 0.95) 100%);
           backdrop-filter: blur(20px);
           -webkit-backdrop-filter: blur(20px);
           border: 1px solid rgba(255, 255, 255, 0.08);
@@ -409,12 +432,12 @@ export default function Navbar() {
         }
 
         .dynamic-island:hover {
-          width: 900px;
+          width: 980px;
           height: 64px;
           border-radius: 32px;
-          background: rgba(3, 5, 22, 0.82);
+          background: rgba(3, 5, 22, 0.85);
           border-color: var(--active-border-glow);
-          box-shadow: 0 20px 45px -10px rgba(0, 0, 0, 0.7), 0 0 30px -5px var(--active-shadow-glow);
+          box-shadow: 0 20px 45px -10px rgba(0, 0, 0, 0.7), 0 0 35px var(--active-shadow-glow);
           padding: 0 32px;
         }
 
@@ -502,10 +525,10 @@ export default function Navbar() {
           left: 50%;
           transform: translateX(-50%) translateY(12px);
           width: 230px;
-          background: rgba(3, 5, 22, 0.94);
-          backdrop-filter: blur(20px);
-          -webkit-backdrop-filter: blur(20px);
-          border: 1px solid rgba(255, 255, 255, 0.08);
+          background: rgba(3, 5, 22, 0.95);
+          backdrop-filter: blur(25px);
+          -webkit-backdrop-filter: blur(25px);
+          border: 1px solid var(--active-border-glow);
           border-radius: 16px;
           padding: 10px;
           z-index: 1010;
@@ -514,8 +537,8 @@ export default function Navbar() {
           transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
           display: flex;
           flex-direction: column;
-          gap: 3px;
-          box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7), 0 0 20px rgba(255, 255, 255, 0.02);
+          gap: 4px;
+          box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7), 0 0 20px var(--active-shadow-glow);
         }
 
         .nav-item-container:hover .nav-dropdown {
@@ -532,6 +555,7 @@ export default function Navbar() {
           padding: 8px 12px;
           background: transparent;
           border: none;
+          border-left: 2px solid transparent;
           border-radius: 8px;
           text-align: left;
           cursor: none;
@@ -539,11 +563,12 @@ export default function Navbar() {
         }
 
         .dropdown-item.active {
-          background: rgba(255, 255, 255, 0.05);
+          background: rgba(255, 255, 255, 0.06);
+          border-left-color: var(--active-border-glow);
         }
 
         .dropdown-item:hover {
-          background: rgba(255, 255, 255, 0.06);
+          background: rgba(255, 255, 255, 0.08);
           transform: translateX(4px);
         }
 
@@ -559,6 +584,16 @@ export default function Navbar() {
         .dropdown-item.active .dropdown-item-label,
         .dropdown-item:hover .dropdown-item-label {
           color: #ffffff;
+        }
+
+        .beacon-ping {
+          animation: beaconPulse 2s infinite ease-in-out;
+        }
+
+        @keyframes beaconPulse {
+          0% { transform: scale(1); opacity: 0.8; box-shadow: 0 0 4px var(--active-border-glow); }
+          50% { transform: scale(1.4); opacity: 1; box-shadow: 0 0 12px var(--active-border-glow); }
+          100% { transform: scale(1); opacity: 0.8; box-shadow: 0 0 4px var(--active-border-glow); }
         }
       `}} />
 
@@ -585,15 +620,15 @@ export default function Navbar() {
             }}
           >
             spaceedu
-            <span style={{
+            <span className="beacon-ping" style={{
               width:        '5px',
               height:       '5px',
               borderRadius: '50%',
               background:    activeColor,
               boxShadow:    `0 0 8px 1.5px ${activeColor}80`,
-              animation:    'pulse 2s infinite',
               transition:   'background 0.5s ease, box-shadow 0.5s ease',
-            }} />
+              '--active-border-glow': activeColor
+            } as React.CSSProperties} />
           </div>
           <span style={{ color: 'rgba(255,255,255,0.15)', fontSize: '0.8rem' }}>|</span>
           <span style={{
@@ -606,15 +641,14 @@ export default function Navbar() {
           }}>
             {SECTIONS.find(s => s.id === activeSection)?.hudLabel || 'DEEP SPACE'}
           </span>
+          <span style={{ color: 'rgba(255,255,255,0.15)', fontSize: '0.8rem' }}>|</span>
           <span style={{
             fontFamily: 'var(--font-mono)',
-            fontSize: '0.5rem',
-            color: 'rgba(255,255,255,0.35)',
-            letterSpacing: '0.05em',
-            marginLeft: '4px',
-            animation: 'pulse 1.5s infinite alternate'
+            fontSize: '0.52rem',
+            color: 'rgba(255,255,255,0.45)',
+            letterSpacing: '0.08em',
           }}>
-            [MENU]
+            DST: {SECTION_DISTANCES[activeSection] || '0 KM'}
           </span>
         </div>
 
@@ -711,6 +745,9 @@ export default function Navbar() {
               </div>
               <div>
                 <span style={{ color: activeColor }}>SIG:</span> {signal}%
+              </div>
+              <div>
+                <span style={{ color: activeColor }}>DST:</span> {SECTION_DISTANCES[activeSection] || '0 KM'}
               </div>
             </div>
 
