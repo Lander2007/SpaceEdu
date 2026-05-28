@@ -3,6 +3,7 @@ import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from
 
 // Lazy load the BlackHoleScene for better performance
 const BlackHoleScene = lazy(() => import('./components/three/BlackHoleScene').then(m => ({ default: m.BlackHoleScene })));
+const MilkyWayScene = lazy(() => import('./components/three/MilkyWayScene').then(m => ({ default: m.MilkyWayScene })));
 
 /* ─────────────────────────────────────────────
    SECTION CONFIG
@@ -18,13 +19,14 @@ const SECTIONS = [
   { id: 'saturn',  label: 'Saturn',    isPlanet: true  },
   { id: 'uranus',  label: 'Uranus',    isPlanet: true  },
   { id: 'neptune', label: 'Neptune',   isPlanet: true  },
+  { id: 'milkyway', label: 'Milky Way', isPlanet: false },
   { id: 'void',    label: 'The Void',  isPlanet: false },
 ];
 
 /* ─────────────────────────────────────────────
    ANIMATION VARIANTS
 ───────────────────────────────────────────── */
-const contentContainerVariants = {
+const contentContainerVariants: any = {
   warpInitial: {},
   warpAnimate: {
     transition: {
@@ -43,7 +45,7 @@ const contentContainerVariants = {
   fadeExit: {},
 };
 
-const textFadeUpVariants = {
+const textFadeUpVariants: any = {
   warpInitial: { opacity: 0, y: 30 },
   warpAnimate: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.25, 1, 0.5, 1] } },
   warpExit: { opacity: 0, y: -20, transition: { duration: 0.4, ease: 'easeIn' } },
@@ -53,7 +55,7 @@ const textFadeUpVariants = {
   fadeExit: { opacity: 0, y: -20, transition: { duration: 0.4, ease: 'easeIn' } },
 };
 
-const lineExpandVariants = {
+const lineExpandVariants: any = {
   warpInitial: { scaleX: 0, originX: 0 },
   warpAnimate: { scaleX: 1, transition: { duration: 0.6, ease: 'easeOut' } },
   warpExit: { scaleX: 0, originX: 0, transition: { duration: 0.3 } },
@@ -63,7 +65,7 @@ const lineExpandVariants = {
   fadeExit: { scaleX: 0, originX: 0, transition: { duration: 0.3 } },
 };
 
-const planetVariants = {
+const planetVariants: any = {
   warpInitial: (layoutType: 'left' | 'right' | 'center') => {
     const offsetX = layoutType === 'left' ? '25vw' : layoutType === 'right' ? '-25vw' : '0vw';
     return {
@@ -232,14 +234,14 @@ function PlanetImage({
   className,
   children
 }: PlanetImageProps) {
-  const springX = useSpring(mouseX, { damping: 45, stiffness: 120 });
-  const springY = useSpring(mouseY, { damping: 45, stiffness: 120 });
+  const springX = useSpring(mouseX as any, { damping: 45, stiffness: 120 });
+  const springY = useSpring(mouseY as any, { damping: 45, stiffness: 120 });
 
-  const rotateX = useTransform(springY, [-0.5, 0.5], [12, -12]);
-  const rotateY = useTransform(springX, [-0.5, 0.5], [-12, 12]);
+  const rotateX: any = useTransform(springY as any, [-0.5, 0.5], [12, -12]);
+  const rotateY: any = useTransform(springX as any, [-0.5, 0.5], [-12, 12]);
 
-  const shiftX = useTransform(springX, [-0.5, 0.5], [18, -18]);
-  const shiftY = useTransform(springY, [-0.5, 0.5], [18, -18]);
+  const shiftX: any = useTransform(springX as any, [-0.5, 0.5], [18, -18]);
+  const shiftY: any = useTransform(springY as any, [-0.5, 0.5], [18, -18]);
 
   return (
     <motion.div
@@ -414,10 +416,38 @@ function SectionHero({ mouseX, mouseY }: { mouseX: any; mouseY: any }) {
 }
 
 /* ─────────────────────────────────────────────
+   MOBILE RESPONSIVE HELPER
+───────────────────────────────────────────── */
+function useResponsivePlanetSize(desktopRatio: number, maxSize: number) {
+  const [size, setSize] = useState(Math.min(window.innerHeight * desktopRatio, maxSize));
+  
+  useEffect(() => {
+    const updateSize = () => {
+      const isMobile = window.innerWidth <= 768;
+      const isSmallMobile = window.innerWidth <= 480;
+      
+      if (isSmallMobile) {
+        setSize(Math.min(window.innerWidth * 0.7, window.innerHeight * 0.4, 280));
+      } else if (isMobile) {
+        setSize(Math.min(window.innerWidth * 0.75, window.innerHeight * 0.5, 400));
+      } else {
+        setSize(Math.min(window.innerHeight * desktopRatio, maxSize));
+      }
+    };
+    
+    updateSize();
+    window.addEventListener('resize', updateSize);
+    return () => window.removeEventListener('resize', updateSize);
+  }, [desktopRatio, maxSize]);
+  
+  return size;
+}
+
+/* ─────────────────────────────────────────────
    SECTION 02 — THE SUN
 ───────────────────────────────────────────── */
 function SectionSun({ mouseX, mouseY }: { mouseX: any; mouseY: any }) {
-  const pSize = Math.min(window.innerHeight * 0.68, 600);
+  const pSize = useResponsivePlanetSize(0.68, 600);
   return (
     <motion.section
       id="section-sun"
@@ -480,6 +510,7 @@ function SectionSun({ mouseX, mouseY }: { mouseX: any; mouseY: any }) {
    SECTION 03 — MERCURY
 ───────────────────────────────────────────── */
 function SectionMercury({ mouseX, mouseY }: { mouseX: any; mouseY: any }) {
+  const pSize = useResponsivePlanetSize(0.65, 560);
   return (
     <motion.section
       id="section-mercury"
@@ -505,7 +536,7 @@ function SectionMercury({ mouseX, mouseY }: { mouseX: any; mouseY: any }) {
           <PlanetImage
             src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/4a/Mercury_in_true_color.jpg/1024px-Mercury_in_true_color.jpg"
             alt="Mercury"
-            size={Math.min(window.innerHeight * 0.65, 560)}
+            size={pSize}
             accentColor="#B0B0B0"
             accentGlow="rgba(176,176,176,0.2)"
             layoutType="left"
@@ -534,6 +565,7 @@ function SectionMercury({ mouseX, mouseY }: { mouseX: any; mouseY: any }) {
    SECTION 04 — VENUS
 ───────────────────────────────────────────── */
 function SectionVenus({ mouseX, mouseY }: { mouseX: any; mouseY: any }) {
+  const pSize = useResponsivePlanetSize(0.58, 500);
   return (
     <motion.section
       id="section-venus"
@@ -561,7 +593,7 @@ function SectionVenus({ mouseX, mouseY }: { mouseX: any; mouseY: any }) {
           <PlanetImage
             src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Venus-real_color.jpg/1024px-Venus-real_color.jpg"
             alt="Venus"
-            size={Math.min(window.innerHeight * 0.58, 500)}
+            size={pSize}
             accentColor="#E8A045"
             accentGlow="rgba(232,160,69,0.3)"
             tilt={5}
@@ -596,6 +628,7 @@ function SectionVenus({ mouseX, mouseY }: { mouseX: any; mouseY: any }) {
    SECTION 05 — EARTH
 ───────────────────────────────────────────── */
 function SectionEarth({ mouseX, mouseY }: { mouseX: any; mouseY: any }) {
+  const pSize = useResponsivePlanetSize(0.68, 580);
   return (
     <motion.section
       id="section-earth"
@@ -625,7 +658,7 @@ function SectionEarth({ mouseX, mouseY }: { mouseX: any; mouseY: any }) {
           <PlanetImage
             src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/97/The_Earth_seen_from_Apollo_17.jpg/1024px-The_Earth_seen_from_Apollo_17.jpg"
             alt="Earth"
-            size={Math.min(window.innerHeight * 0.68, 580)}
+            size={pSize}
             accentColor="#4FC3F7"
             accentGlow="rgba(79,195,247,0.25)"
             layoutType="right"
@@ -650,6 +683,7 @@ function SectionEarth({ mouseX, mouseY }: { mouseX: any; mouseY: any }) {
    SECTION 06 — MARS
 ───────────────────────────────────────────── */
 function SectionMars({ mouseX, mouseY }: { mouseX: any; mouseY: any }) {
+  const pSize = useResponsivePlanetSize(0.65, 560);
   const [distance, setDistance] = useState(225187000);
   useEffect(() => {
     const interval = setInterval(() => {
@@ -674,7 +708,7 @@ function SectionMars({ mouseX, mouseY }: { mouseX: any; mouseY: any }) {
           <PlanetImage
             src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/02/OSIRIS_Mars_true_color.jpg/1024px-OSIRIS_Mars_true_color.jpg"
             alt="Mars"
-            size={Math.min(window.innerHeight * 0.65, 560)}
+            size={pSize}
             accentColor="#C1440E"
             accentGlow="rgba(193,68,14,0.3)"
             layoutType="left"
@@ -718,7 +752,7 @@ function SectionMars({ mouseX, mouseY }: { mouseX: any; mouseY: any }) {
    SECTION 07 — JUPITER
 ───────────────────────────────────────────── */
 function SectionJupiter({ mouseX, mouseY }: { mouseX: any; mouseY: any }) {
-  const pSize = Math.min(window.innerHeight * 0.72, 620);
+  const pSize = useResponsivePlanetSize(0.72, 620);
   return (
     <motion.section
       id="section-jupiter"
@@ -814,7 +848,7 @@ function SectionJupiter({ mouseX, mouseY }: { mouseX: any; mouseY: any }) {
    SECTION 08 — SATURN
 ───────────────────────────────────────────── */
 function SectionSaturn({ mouseX, mouseY }: { mouseX: any; mouseY: any }) {
-  const pSize = Math.min(window.innerHeight * 0.52, 450);
+  const pSize = useResponsivePlanetSize(0.52, 450);
 
   // Saturn rings split to encircle the planet body perfectly in 3D
   const renderSaturnRings = (isFront: boolean) => {
@@ -919,6 +953,7 @@ function SectionSaturn({ mouseX, mouseY }: { mouseX: any; mouseY: any }) {
    SECTION 09 — URANUS
 ───────────────────────────────────────────── */
 function SectionUranus({ mouseX, mouseY }: { mouseX: any; mouseY: any }) {
+  const pSize = useResponsivePlanetSize(0.65, 560);
   return (
     <motion.section
       id="section-uranus"
@@ -976,7 +1011,7 @@ function SectionUranus({ mouseX, mouseY }: { mouseX: any; mouseY: any }) {
           <PlanetImage
             src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3d/Uranus2.jpg/1024px-Uranus2.jpg"
             alt="Uranus"
-            size={Math.min(window.innerHeight * 0.65, 560)}
+            size={pSize}
             accentColor="#7DE8E8"
             accentGlow="rgba(125,232,232,0.25)"
             tilt={98}
@@ -994,6 +1029,7 @@ function SectionUranus({ mouseX, mouseY }: { mouseX: any; mouseY: any }) {
    SECTION 10 — NEPTUNE
 ───────────────────────────────────────────── */
 function SectionNeptune({ mouseX, mouseY }: { mouseX: any; mouseY: any }) {
+  const pSize = useResponsivePlanetSize(0.65, 560);
   return (
     <motion.section
       id="section-neptune"
@@ -1010,7 +1046,7 @@ function SectionNeptune({ mouseX, mouseY }: { mouseX: any; mouseY: any }) {
           <PlanetImage
             src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/56/Neptune_Full.jpg/1024px-Neptune_Full.jpg"
             alt="Neptune"
-            size={Math.min(window.innerHeight * 0.65, 560)}
+            size={pSize}
             accentColor="#3A7BD5"
             accentGlow="rgba(58,123,213,0.3)"
             layoutType="left"
@@ -1037,6 +1073,297 @@ function SectionNeptune({ mouseX, mouseY }: { mouseX: any; mouseY: any }) {
 
       <div className="edge-label" style={{ zIndex: 3 }}>
         Kuiper Belt →
+      </div>
+    </motion.section>
+  );
+}
+
+
+/* ─────────────────────────────────────────────
+   SECTION 10.5 — THE MILKY WAY
+───────────────────────────────────────────── */
+function SectionMilkyWay({ mouseX, mouseY }: { mouseX: any; mouseY: any }) {
+  const [focusMode, setFocusMode] = useState<'full' | 'core' | 'orion' | 'perseus'>('full');
+  const [details, setDetails] = useState("Viewing the full Milky Way spiral galaxy. Spanning 100,000 light-years, it contains 100 to 400 billion stars. Our Solar System lies in the Orion Arm, about 26,000 light-years from the center.");
+  const [detailsOpacity, setDetailsOpacity] = useState(1);
+  const [spectrumMode, setSpectrumMode] = useState<number>(0); // 0=Visible, 1=Infrared, 2=Gamma-Ray
+  const [isCinematicMode, setIsCinematicMode] = useState(false);
+
+  const handleFocus = (mode: 'full' | 'core' | 'orion' | 'perseus', text: string) => {
+    setDetailsOpacity(0);
+    setFocusMode(mode);
+    setIsCinematicMode(false); // disable cinematic scan on manual focus selection
+    setTimeout(() => {
+      setDetails(text);
+      setDetailsOpacity(1);
+    }, 200);
+  };
+
+  const handleCinematicToggle = () => {
+    setIsCinematicMode(!isCinematicMode);
+    if (!isCinematicMode) {
+      setFocusMode('full'); // return to full preset for starting orbit scan
+    }
+  };
+
+  return (
+    <motion.section
+      id="section-milkyway"
+      className="section"
+      style={{ background: '#020008', overflow: 'hidden' }}
+    >
+      {/* 3D Milky Way Canvas wrapper */}
+      <Suspense fallback={
+        <div style={{
+          position: 'absolute',
+          inset: 0,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          color: 'rgba(255,255,255,0.3)',
+          fontFamily: 'Space Mono, monospace',
+          fontSize: 12,
+        }}>
+          Loading galactic coordinates...
+        </div>
+      }>
+        <MilkyWayScene 
+          mouseX={mouseX} 
+          mouseY={mouseY} 
+          focusMode={focusMode} 
+          spectrumMode={spectrumMode}
+          isCinematicMode={isCinematicMode}
+        />
+      </Suspense>
+
+      {/* Content overlay */}
+      <div style={{ position: 'relative', zIndex: 10, height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: '80px', pointerEvents: 'none' }}>
+        {/* Top section */}
+        <motion.div variants={contentContainerVariants} style={{ pointerEvents: 'auto' }}>
+          <p className="font-mono text-dim" style={{ fontSize: 11, letterSpacing: '0.2em', marginBottom: 12 }}>
+            GALACTIC HOME
+          </p>
+          <h2 className="section-name" style={{ fontSize: 100, lineHeight: 0.9, marginBottom: 20 }}>
+            THE MILKY<br />WAY
+          </h2>
+          <div className="accent-line" style={{ background: '#7de8e8', width: 140 }} />
+        </motion.div>
+
+        {/* Dual Panel Glassmorphic HUD */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', gap: '40px', width: '100%', pointerEvents: 'none' }}>
+          
+          {/* Left Panel: Scanner & Controls */}
+          <motion.div
+            style={{
+              pointerEvents: 'auto',
+              background: 'rgba(4, 10, 15, 0.6)',
+              border: '1px solid rgba(125, 232, 232, 0.15)',
+              borderRadius: '16px',
+              padding: '24px',
+              width: '100%',
+              maxWidth: '380px',
+              boxShadow: '0 10px 40px -10px rgba(0, 0, 0, 0.8)',
+              backdropFilter: 'blur(16px)',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '18px'
+            }}
+            variants={textFadeUpVariants}
+          >
+            {/* Zone Buttons */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+              <div style={{ fontFamily: 'Space Mono, monospace', fontSize: '0.62rem', letterSpacing: '0.2em', color: 'rgba(255, 255, 255, 0.4)', marginBottom: '4px' }}>
+                GALACTIC SCANNER PRESETS
+              </div>
+              {[
+                { mode: 'full', label: 'System View', color: '#ffffff' },
+                { mode: 'core', label: 'Galactic Core', color: '#ffd23f' },
+                { mode: 'orion', label: 'Orion Arm', color: '#7de8e8' },
+                { mode: 'perseus', label: 'Perseus Arm', color: '#c084fc' }
+              ].map(tab => (
+                <button
+                  key={tab.mode}
+                  onClick={() => handleFocus(tab.mode as any, tab.mode === 'full' ? 'Viewing the full Milky Way spiral galaxy. Spanning 100,000 light-years, it contains 100 to 400 billion stars. Our Solar System lies in the Orion Arm, about 26,000 light-years from the center.' : tab.mode === 'core' ? 'Sagittarius A* lies at the center. A supermassive black hole with a mass of 4.1 million solar masses, it exerts extreme gravitational forces on orbiting stars.' : tab.mode === 'orion' ? 'Zooming into the Orion Arm. Our Sun is located here in a local spur of the galaxy. A peaceful, stable stellar neighborhood ideal for the emergence of life.' : 'The Perseus Arm is one of the major spiral arms of the Milky Way. Voluminous gas clouds and active stellar nurseries collapse here, birthing thousands of new stars.')}
+                  style={{
+                    background: focusMode === tab.mode ? 'rgba(125, 232, 232, 0.14)' : 'rgba(255, 255, 255, 0.02)',
+                    borderColor: focusMode === tab.mode ? 'rgba(125, 232, 232, 0.5)' : 'rgba(255, 255, 255, 0.05)',
+                    borderWidth: '1px',
+                    borderStyle: 'solid',
+                    color: '#fff',
+                    borderRadius: '8px',
+                    padding: '10px 14px',
+                    fontFamily: 'Inter, sans-serif',
+                    fontSize: '0.8rem',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '10px',
+                    transition: 'all 0.25s ease',
+                    textAlign: 'left'
+                  }}
+                >
+                  <span
+                    style={{
+                      width: '6px',
+                      height: '6px',
+                      borderRadius: '50%',
+                      background: tab.color,
+                      boxShadow: focusMode === tab.mode ? `0 0 8px ${tab.color}` : 'none'
+                    }}
+                  />
+                  {tab.label}
+                </button>
+              ))}
+            </div>
+
+            {/* Spectrum Filter */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+              <div style={{ fontFamily: 'Space Mono, monospace', fontSize: '0.62rem', letterSpacing: '0.2em', color: 'rgba(255, 255, 255, 0.4)', marginBottom: '4px' }}>
+                WAVELENGTH FILTERS (SPECTRA)
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '4px', background: 'rgba(0, 0, 0, 0.25)', padding: '3px', borderRadius: '8px' }}>
+                {[
+                  { value: 0, label: 'VIS', title: 'Visible' },
+                  { value: 1, label: 'IR', title: 'Infrared' },
+                  { value: 2, label: 'GAMMA', title: 'Gamma-ray' }
+                ].map(spec => (
+                  <button
+                    key={spec.value}
+                    title={spec.title}
+                    onClick={() => setSpectrumMode(spec.value)}
+                    style={{
+                      background: spectrumMode === spec.value ? 'rgba(125, 232, 232, 0.2)' : 'transparent',
+                      border: 'none',
+                      borderRadius: '5px',
+                      color: spectrumMode === spec.value ? '#7de8e8' : 'rgba(255, 255, 255, 0.5)',
+                      fontFamily: 'Space Mono, monospace',
+                      fontSize: '0.65rem',
+                      padding: '6px 0',
+                      cursor: 'pointer',
+                      transition: 'all 0.25s ease'
+                    }}
+                  >
+                    {spec.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Cinematic Scan */}
+            <button
+              onClick={handleCinematicToggle}
+              style={{
+                background: isCinematicMode ? 'rgba(125, 232, 232, 0.2)' : 'rgba(125, 232, 232, 0.08)',
+                borderColor: '#7de8e8',
+                borderWidth: '1px',
+                borderStyle: 'solid',
+                borderRadius: '8px',
+                color: '#7de8e8',
+                fontFamily: 'Space Mono, monospace',
+                fontSize: '0.72rem',
+                fontWeight: 500,
+                padding: '12px',
+                width: '100%',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '8px',
+                letterSpacing: '0.1em',
+                transition: 'all 0.25s ease'
+              }}
+            >
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M23 7l-7 5 7 5V7z" />
+                <rect x="1" y="5" width="15" height="14" rx="2" ry="2" />
+              </svg>
+              {isCinematicMode ? "SCANNING GALACTIC PRESETS..." : "INITIATE CINEMATIC SCAN"}
+            </button>
+
+          </motion.div>
+
+          {/* Right Panel: Science Dashboard */}
+          <motion.div
+            style={{
+              pointerEvents: 'auto',
+              background: 'rgba(4, 10, 15, 0.6)',
+              border: '1px solid rgba(125, 232, 232, 0.15)',
+              borderRadius: '16px',
+              padding: '24px',
+              width: '100%',
+              maxWidth: '420px',
+              boxShadow: '0 10px 40px -10px rgba(0, 0, 0, 0.8)',
+              backdropFilter: 'blur(16px)',
+              display: 'flex',
+              flexDirection: 'column'
+            }}
+            variants={textFadeUpVariants}
+          >
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={focusMode}
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -15 }}
+                transition={{ duration: 0.2 }}
+                style={{ opacity: detailsOpacity, transition: 'opacity 0.2s ease' }}
+              >
+                <p className="font-mono" style={{ fontSize: '0.64rem', letterSpacing: '0.25em', color: '#7de8e8', marginBottom: '8px', fontWeight: 600, textTransform: 'uppercase' }}>
+                  {focusMode === 'full' ? 'GALACTIC STRUCTURE SCAN' : 'DETAILED SCAN PRESET'}
+                </p>
+                <h3 className="font-heading" style={{ fontSize: '1.8rem', fontWeight: 300, color: 'rgba(255, 255, 255, 0.95)', marginBottom: '12px', lineHeight: 1.15 }}>
+                  {focusMode === 'full' ? 'The Milky Way' : focusMode === 'core' ? 'Galactic Core' : focusMode === 'orion' ? 'Orion Arm' : 'Perseus Arm'}
+                </h3>
+                <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '0.88rem', fontWeight: 300, color: 'rgba(255, 255, 255, 0.6)', lineHeight: 1.6, letterSpacing: '0.01em' }}>
+                  {details}
+                </p>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '20px' }}>
+                  {(focusMode === 'full' ? [
+                    { label: "Galactic Classification", value: "Barred Spiral (SBbc)" },
+                    { label: "Estimated Star Count", value: "200 - 400 Billion" },
+                    { label: "Span Diameter", value: "100,000 Light-Years" }
+                  ] : focusMode === 'core' ? [
+                    { label: "Central Singularity", value: "Sagittarius A* (Sgr A*)" },
+                    { label: "Black Hole Mass", value: "4.15 Million Solar Masses" },
+                    { label: "Extreme Star Density", value: "10⁶ stars / cubic parsec" }
+                  ] : focusMode === 'orion' ? [
+                    { label: "Core Radial Distance", value: "26,000 Light-Years" },
+                    { label: "Local Stellar Spur", value: "Orion-Cygnus Arm" },
+                    { label: "Stellar Systems", value: "Sol (Sun), Kepler-186" }
+                  ] : [
+                    { label: "Outer Boundary Reach", value: "21,000 Light-Years radial" },
+                    { label: "Stellar Nurseries", value: "W3, W4, W5 Molecular Clouds" },
+                    { label: "Arm Structure Type", value: "Primary Spiral Arm" }
+                  ]).map(stat => (
+                    <div key={stat.label} style={{ display: 'flex', justifyBetween: 'space-between', alignItems: 'center', padding: '8px 0', borderBottom: '1px solid rgba(255, 255, 255, 0.06)' }}>
+                      <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '0.72rem', color: 'rgba(255, 255, 255, 0.45)', display: 'inline-block' }}>{stat.label}</span>
+                      <span className="font-mono" style={{ fontSize: '0.8rem', color: 'rgba(255, 255, 255, 0.9)', fontWeight: 500, display: 'inline-block' }}>{stat.value}</span>
+                    </div>
+                  ))}
+                </div>
+              </motion.div>
+            </AnimatePresence>
+          </motion.div>
+
+        </div>
+
+        {/* Footer credits */}
+        <motion.div variants={textFadeUpVariants} style={{ pointerEvents: 'auto' }}>
+          <div style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            fontFamily: 'Space Mono, monospace',
+            fontSize: 9,
+            color: 'rgba(255,255,255,0.3)',
+            letterSpacing: '0.1em',
+            width: '100%'
+          }}>
+            <span>Images: NASA / JPL-Caltech / ESA</span>
+            <span>Typography: Cormorant Garamond + Space Mono</span>
+            <span>SOLAR SYSTEM © {new Date().getFullYear()}</span>
+          </div>
+        </motion.div>
       </div>
     </motion.section>
   );
@@ -1310,6 +1637,19 @@ export default function SolarSystem() {
   useEffect(() => {
     let lastWheelTime = 0;
     const onWheel = (e: WheelEvent) => {
+      const target = e.target as HTMLElement;
+      // If we are on the Milky Way section, let's see if we should ignore the scroll transition
+      const isMilkyWayCanvas = 
+        SECTIONS[current]?.id === 'milkyway' && 
+        !!target.closest('#section-milkyway') && 
+        !target.closest('.hud-buttons') && 
+        !target.closest('.hud-details');
+
+      if (isMilkyWayCanvas) {
+        // Let OrbitControls handle zooming, don't transition sections
+        return;
+      }
+
       e.preventDefault();
       const now = Date.now();
       if (now - lastWheelTime < 1000) return;
@@ -1324,8 +1664,23 @@ export default function SolarSystem() {
     };
 
     let touchStartY = 0;
-    const onTouchStart = (e: TouchEvent) => { touchStartY = e.touches[0].clientY; };
+    let isTouchOnMilkyWay = false;
+
+    const onTouchStart = (e: TouchEvent) => { 
+      touchStartY = e.touches[0].clientY; 
+      const target = e.target as HTMLElement;
+      isTouchOnMilkyWay = 
+        SECTIONS[current]?.id === 'milkyway' && 
+        !!target.closest('#section-milkyway') && 
+        !target.closest('.hud-buttons') && 
+        !target.closest('.hud-details');
+    };
+
     const onTouchEnd = (e: TouchEvent) => {
+      if (isTouchOnMilkyWay) {
+        // Let OrbitControls handle mobile touch drag/pinch zoom
+        return;
+      }
       const dy = touchStartY - e.changedTouches[0].clientY;
       if (Math.abs(dy) > 50) {
         if (dy > 0) goTo(current + 1);
@@ -1358,6 +1713,7 @@ export default function SolarSystem() {
       case 'saturn':  return <SectionSaturn mouseX={mouseX} mouseY={mouseY} />;
       case 'uranus':  return <SectionUranus mouseX={mouseX} mouseY={mouseY} />;
       case 'neptune': return <SectionNeptune mouseX={mouseX} mouseY={mouseY} />;
+      case 'milkyway': return <SectionMilkyWay mouseX={mouseX} mouseY={mouseY} />;
       case 'void':    return <SectionVoid mouseX={mouseX} mouseY={mouseY} />;
       default:        return null;
     }

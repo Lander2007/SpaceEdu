@@ -1,0 +1,389 @@
+.section {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  min-height: 100svh;
+  overflow: hidden;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #010006;
+}
+
+.titleContainer {
+  position: absolute;
+  top: 115px;
+  left: 8%;
+  z-index: 3;
+  pointer-events: none;
+}
+
+.categoryLabel {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.3em;
+  color: #7de8e8;
+  margin-bottom: 8px;
+}
+
+.title {
+  font-family: var(--font-display);
+  font-size: clamp(2.5rem, 6vw, 4.5rem);
+  font-weight: 300;
+  line-height: 0.95;
+  color: rgba(255, 255, 255, 0.9);
+  letter-spacing: 0.04em;
+  margin: 0;
+  text-shadow: 0 4px 30px rgba(0, 0, 0, 0.8);
+}
+
+.accentLine {
+  height: 1px;
+  width: 120px;
+  background: linear-gradient(90deg, #7de8e8, transparent);
+  margin-top: 14px;
+}
+
+.canvasContainer {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.6) 0%,
+    transparent 20%,
+    transparent 80%,
+    rgba(0, 0, 0, 0.8) 100%
+  );
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* HUD Panel Overlay Grid */
+.hudOverlay {
+  position: absolute;
+  bottom: 8%;
+  left: 8%;
+  right: 8%;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 40px;
+  z-index: 4;
+  pointer-events: none;
+}
+
+.controlPanel, .infoPanel {
+  pointer-events: auto;
+  background: rgba(4, 10, 15, 0.6);
+  border: 1px solid rgba(125, 232, 232, 0.15);
+  border-radius: 16px;
+  padding: 24px;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.7);
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  width: 100%;
+}
+
+.controlPanel:hover, .infoPanel:hover {
+  border-color: rgba(125, 232, 232, 0.35);
+  box-shadow: 0 15px 50px -5px rgba(0, 0, 0, 0.8);
+}
+
+.controlPanel {
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.infoPanel {
+  max-width: 440px;
+}
+
+.hudGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.hudLabel {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.2em;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.zoneButtons {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.hudBtn {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.7);
+  padding: 10px 14px;
+  font-size: 0.82rem;
+  font-family: var(--font-body);
+  text-align: left;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: all 0.25s ease;
+}
+
+.hudBtn:hover {
+  background: rgba(125, 232, 232, 0.04);
+  border-color: rgba(125, 232, 232, 0.25);
+  color: #fff;
+}
+
+.activeBtn {
+  background: rgba(125, 232, 232, 0.08) !important;
+  border-color: rgba(125, 232, 232, 0.4) !important;
+  color: #fff;
+  font-weight: 500;
+}
+
+.btnDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+
+.filterTabs {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px;
+  background: rgba(0, 0, 0, 0.25);
+  padding: 3px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+.filterTab {
+  background: transparent;
+  border: none;
+  border-radius: 5px;
+  color: rgba(255, 255, 255, 0.5);
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  padding: 6px 0;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.filterTab:hover {
+  color: #fff;
+}
+
+.activeTab {
+  background: rgba(125, 232, 232, 0.15);
+  color: #7de8e8;
+  font-weight: 500;
+}
+
+.cinematicBtn {
+  background: rgba(125, 232, 232, 0.08);
+  border: 1px solid rgba(125, 232, 232, 0.25);
+  border-radius: 8px;
+  color: #7de8e8;
+  font-family: var(--font-mono);
+  font-size: 0.74rem;
+  font-weight: 500;
+  padding: 12px;
+  width: 100%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  letter-spacing: 0.1em;
+  transition: all 0.25s ease;
+}
+
+.cinematicBtn:hover {
+  background: rgba(125, 232, 232, 0.14);
+  border-color: rgba(125, 232, 232, 0.4);
+  box-shadow: 0 0 15px rgba(125, 232, 232, 0.15);
+}
+
+.activeCinematic {
+  background: rgba(125, 232, 232, 0.2) !important;
+  border-color: #7de8e8 !important;
+  color: #fff !important;
+  animation: pulseScan 2s infinite ease-in-out;
+}
+
+@keyframes pulseScan {
+  0%, 100% { opacity: 0.9; }
+  50% { opacity: 0.6; }
+}
+
+/* Info Panel Styling */
+.panelLabel {
+  font-family: var(--font-mono);
+  font-size: 0.64rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: #7de8e8;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.panelTitle {
+  font-family: var(--font-display);
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.95);
+  margin-bottom: 12px;
+  letter-spacing: 0.02em;
+  line-height: 1.15;
+}
+
+.panelText {
+  font-family: var(--font-body);
+  font-size: 0.88rem;
+  font-weight: 300;
+  color: rgba(255, 255, 255, 0.6);
+  line-height: 1.6;
+  letter-spacing: 0.01em;
+}
+
+.stats {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.statCard {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.statLabel {
+  font-family: var(--font-body);
+  font-size: 0.72rem;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.statValue {
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 500;
+}
+
+/* Neighbor snap links */
+.neighborLeft,
+.neighborRight {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.2em;
+  color: rgba(255, 255, 255, 0.3);
+  text-decoration: none;
+  z-index: 10;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 10px 16px;
+  border-radius: 30px;
+  background: rgba(5, 5, 12, 0.4);
+  backdrop-filter: blur(10px);
+}
+
+.neighborLeft {
+  left: 24px;
+}
+
+.neighborRight {
+  right: 24px;
+}
+
+.neighborLeft:hover,
+.neighborRight:hover {
+  color: #7de8e8;
+  border-color: #7de8e8;
+  background: rgba(125, 232, 232, 0.05);
+  box-shadow: 0 0 15px rgba(125, 232, 232, 0.1);
+}
+
+/* Mobile & Tablet */
+@media (max-width: 1024px) {
+  .hudOverlay {
+    flex-direction: column;
+    align-items: center;
+    bottom: 4%;
+    gap: 16px;
+  }
+  .controlPanel, .infoPanel {
+    max-width: 500px;
+    padding: 16px;
+  }
+  .neighborLeft, .neighborRight {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .titleContainer {
+    top: 85px;
+    left: 20px;
+  }
+  .title {
+    font-size: 2.2rem;
+  }
+  .hudOverlay {
+    left: 20px;
+    right: 20px;
+    bottom: 2%;
+    gap: 12px;
+  }
+  .controlPanel, .infoPanel {
+    padding: 14px;
+  }
+  .hudGroup {
+    gap: 6px;
+  }
+  .hudBtn {
+    padding: 8px 10px;
+    font-size: 0.76rem;
+  }
+  .filterTab {
+    font-size: 0.58rem;
+    padding: 4px 0;
+  }
+  .panelTitle {
+    font-size: 1.4rem;
+    margin-bottom: 8px;
+  }
+  .panelText {
+    font-size: 0.8rem;
+  }
+  .stats {
+    margin-top: 14px;
+    gap: 8px;
+  }
+  .statCard {
+    padding: 6px 0;
+  }
+}

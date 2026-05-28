@@ -1,4 +1,4 @@
-import { lazy, Suspense, useLayoutEffect, useMemo, useRef } from 'react';
+import { lazy, Suspense, useLayoutEffect, useMemo, useRef, useState, useEffect } from 'react';
 import gsap from 'gsap';
 import ScrollTrigger from 'gsap/ScrollTrigger';
 import { motion } from 'motion/react';
@@ -27,12 +27,40 @@ export function CinematicGalaxyAndPlanets() {
 
   const galaxyTitleRef = useRef<HTMLHeadingElement | null>(null);
   const nebulaRef = useRef<HTMLParagraphElement | null>(null);
+  const galaxyHudRef = useRef<HTMLDivElement | null>(null);
 
   const sunRef = useRef<HTMLDivElement | null>(null);
   const overlayRef = useRef<HTMLDivElement | null>(null);
 
   const planetAnimRefs = useRef<(HTMLDivElement | null)[]>([]);
   const planetCanvasRefs = useRef<(HTMLDivElement | null)[]>([]);
+
+  const [hudActive, setHudActive] = useState(false);
+  const [focusMode, setFocusMode] = useState<'full' | 'core' | 'orion' | 'perseus'>('full');
+  const [details, setDetails] = useState("Viewing the full Milky Way spiral galaxy. Spanning 100,000 light-years, it contains 100 to 400 billion stars. Our Solar System lies in the Orion Arm, about 26,000 light-years from the center.");
+  const [detailsOpacity, setDetailsOpacity] = useState(1);
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      setMousePos({
+        x: (e.clientX / window.innerWidth) - 0.5,
+        y: (e.clientY / window.innerHeight) - 0.5,
+      });
+    };
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, []);
+
+  const handleFocus = (mode: 'full' | 'core' | 'orion' | 'perseus', text: string) => {
+    setDetailsOpacity(0);
+    setFocusMode(mode);
+    setHudActive(mode !== 'full');
+    setTimeout(() => {
+      setDetails(text);
+      setDetailsOpacity(1);
+    }, 200);
+  };
 
   const planets: Planet[] = useMemo(
     () => [
@@ -118,7 +146,7 @@ export function CinematicGalaxyAndPlanets() {
     () => ({
       initial: { opacity: 0, y: 30 },
       animate: { opacity: 1, y: 0, transition: { duration: 1.2, ease: 'easeOut' } },
-    }),
+    } as any),
     []
   );
   const bodyVariants = useMemo(
@@ -129,7 +157,7 @@ export function CinematicGalaxyAndPlanets() {
         y: 0,
         transition: { duration: 1, delay: 0.3, ease: 'easeOut' },
       },
-    }),
+    } as any),
     []
   );
 
@@ -152,6 +180,9 @@ export function CinematicGalaxyAndPlanets() {
 
       gsap.set(galaxyTitleRef.current, { y: 0, opacity: 1, scale: 1 });
       gsap.set(nebulaRef.current, { y: 40, opacity: 0 });
+      if (galaxyHudRef.current) {
+        gsap.set(galaxyHudRef.current, { y: 40, opacity: 0 });
+      }
 
       const galaxyTl = gsap.timeline({
         defaults: { ease: 'none' },
@@ -172,6 +203,9 @@ export function CinematicGalaxyAndPlanets() {
 
       galaxyTl.to(galaxyTitleRef.current, { y: -200, opacity: 0, duration: 0.5 }, 0);
       galaxyTl.to(nebulaRef.current, { y: 0, opacity: 1, duration: 0.4 }, 0.6);
+      if (galaxyHudRef.current) {
+        galaxyTl.to(galaxyHudRef.current, { y: 0, opacity: 1, duration: 0.4 }, 0.6);
+      }
 
       gsap.set(overlayRef.current, { opacity: 0 });
       const fadeTl = gsap.timeline({
@@ -256,7 +290,15 @@ export function CinematicGalaxyAndPlanets() {
         className="relative min-h-screen flex items-center justify-center overflow-hidden"
       >
         <Suspense fallback={<SceneLoadingFallback size={400} label="Loading galaxy…" />}>
-          <StarScene className="galaxy-star-scene" scrollTriggerId="#galaxy-section" variant="galaxy" />
+          <StarScene 
+            className="galaxy-star-scene" 
+            scrollTriggerId="#galaxy-section" 
+            variant="galaxy" 
+            focusMode={focusMode}
+            mouseX={mousePos.x}
+            mouseY={mousePos.y}
+            enableCameraControl={hudActive}
+          />
         </Suspense>
 
         <div className="galaxy-radial-overlay" aria-hidden />
@@ -297,6 +339,88 @@ export function CinematicGalaxyAndPlanets() {
             collapsing under gravity to ignite new suns across unimaginable
             distance.
           </p>
+        </div>
+
+        {/* Interactive Explorer HUD */}
+        <div 
+          ref={galaxyHudRef}
+          className="galaxy-hud-container"
+          style={{ 
+            position: 'absolute', 
+            bottom: '8%', 
+            left: '50%', 
+            transform: 'translateX(-50%)', 
+            zIndex: 20, 
+            display: 'flex', 
+            justifyContent: 'center', 
+            width: '90%', 
+            maxWidth: '540px', 
+            pointerEvents: 'auto',
+            willChange: 'transform, opacity',
+          }}
+        >
+          <div className="galaxy-hud" style={{ width: '100%', margin: 0 }}>
+            <div className="hud-subtitle" style={{ fontFamily: 'Space Mono, monospace', fontSize: '0.7rem', letterSpacing: '0.25em', color: '#7de8e8', marginBottom: '0.8rem', opacity: 0.85 }}>
+              GALACTIC COORDINATES EXPLORER
+            </div>
+            <div className="hud-buttons" style={{ display: 'flex', justifyContent: 'center', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '0.85rem' }}>
+              {[
+                { mode: 'full', label: 'Full View', text: "Viewing the full Milky Way spiral galaxy. Spanning 100,000 light-years, it contains 100 to 400 billion stars. Our Solar System lies in the Orion Arm, about 26,000 light-years from the center." },
+                { mode: 'core', label: 'Galactic Core', text: "Sagittarius A* lies at the center. A supermassive black hole with a mass of 4.1 million solar masses, it exerts extreme gravitational forces on orbiting stars." },
+                { mode: 'orion', label: 'Orion Arm', text: "Zooming into the Orion Arm. Our Sun is located here in a local spur of the galaxy. A peaceful, stable stellar neighborhood ideal for the emergence of life." },
+                { mode: 'perseus', label: 'Perseus Arm', text: "The Perseus Arm is one of the major spiral arms of the Milky Way. Voluminous gas clouds and active stellar nurseries collapse here, birthing thousands of new stars." }
+              ].map(tab => (
+                <button
+                  key={tab.mode}
+                  className={`hud-btn ${focusMode === tab.mode ? 'active' : ''}`}
+                  onClick={() => handleFocus(tab.mode as any, tab.text)}
+                  style={{
+                    background: focusMode === tab.mode ? 'rgba(125, 232, 232, 0.14)' : 'rgba(255, 255, 255, 0.02)',
+                    borderColor: focusMode === tab.mode ? 'rgba(125, 232, 232, 0.5)' : 'rgba(255, 255, 255, 0.05)',
+                    color: '#fff',
+                    borderRadius: '20px',
+                    padding: '0.35rem 0.85rem',
+                    fontFamily: 'Inter, sans-serif',
+                    fontSize: '0.74rem',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.4rem',
+                    transition: 'all 0.25s ease'
+                  }}
+                >
+                  <span
+                    className="btn-dot"
+                    style={{
+                      width: '5px',
+                      height: '5px',
+                      borderRadius: '50%',
+                      background: focusMode === tab.mode ? '#7de8e8' : 'rgba(255,255,255,0.2)',
+                      boxShadow: focusMode === tab.mode ? '0 0 6px 1px #7de8e8' : 'none'
+                    }}
+                  />
+                  {tab.label}
+                </button>
+              ))}
+            </div>
+            <div
+              className="hud-details"
+              style={{
+                fontFamily: 'Inter, sans-serif',
+                fontSize: '0.82rem',
+                lineHeight: 1.45,
+                color: 'rgba(255,255,255,0.5)',
+                minHeight: '44px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                opacity: detailsOpacity,
+                transition: 'opacity 0.2s ease'
+              }}
+            >
+              {details}
+            </div>
+          </div>
         </div>
       </section>
 

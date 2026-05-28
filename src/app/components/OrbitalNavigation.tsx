@@ -12,6 +12,7 @@ const planets = [
   { id: 'uranus', label: '♅', name: 'Uranus' },
   { id: 'neptune', label: '♆', name: 'Neptune' },
   { id: 'outer', label: '∞', name: 'Beyond' },
+  { id: 'black-holes', label: '🕳', name: 'Singularity' },
 ];
 
 export function OrbitalNavigation() {

@@ -20,11 +20,11 @@ export function useLenisScroll() {
     };
     requestAnimationFrame(raf);
 
-    (window as Window & { lenis?: Lenis }).lenis = lenis;
+    (window as any).lenis = lenis;
 
     return () => {
       lenis.destroy();
-      delete (window as Window & { lenis?: Lenis }).lenis;
+      delete (window as any).lenis;
     };
   }, []);
 }

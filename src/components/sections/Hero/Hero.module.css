@@ -1,0 +1,443 @@
+.section {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  min-height: 100svh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  scroll-snap-align: start;
+  background:
+    radial-gradient(ellipse at 50% 50%,
+      rgba(20,10,50,0.8) 0%, rgba(5,2,20,1) 60%, #00000a 100%),
+    radial-gradient(ellipse at 80% 10%,
+      rgba(80,0,160,0.2) 0%, transparent 40%),
+    radial-gradient(ellipse at 20% 90%,
+      rgba(0,40,120,0.15) 0%, transparent 40%);
+}
+
+.canvasContainer {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.content {
+  position: relative;
+  z-index: 5;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  padding: 0 24px;
+}
+
+.label {
+  font-family: var(--font-mono);
+  font-size: clamp(0.55rem, 1.2vw, 0.72rem);
+  letter-spacing: 0.4em;
+  text-transform: uppercase;
+  color: #00ffff;
+  height: 24px;
+  min-height: 24px;
+  text-shadow: 0 0 10px rgba(0, 255, 255, 0.45);
+}
+
+.title {
+  font-family: var(--font-display);
+  font-size: clamp(4rem, 12vw, 9.5rem);
+  font-weight: 700;
+  line-height: 0.95;
+  color: white;
+  text-shadow: 0 0 80px rgba(0, 255, 255, 0.15);
+  opacity: 0;
+  transform: translateY(15px);
+  transition:
+    opacity 1s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 1s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.titleVisible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.title em {
+  font-style: italic;
+  font-weight: 300;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.subtitle {
+  font-family: var(--font-body);
+  font-size: clamp(0.8rem, 1.4vw, 0.95rem);
+  font-weight: 300;
+  color: rgba(255, 255, 255, 0.55);
+  line-height: 1.8;
+  opacity: 0;
+  transform: translateY(15px);
+  transition:
+    opacity 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.3s,
+    transform 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.3s;
+  letter-spacing: 0.01em;
+}
+
+.subtitleVisible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.cta {
+  display: inline-block;
+  padding: 15px 42px;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: #00ffff;
+  border: 1px solid rgba(0, 255, 255, 0.35);
+  border-radius: 40px;
+  background: rgba(0, 255, 255, 0.04);
+  backdrop-filter: blur(15px);
+  box-shadow: 0 0 20px rgba(0, 255, 255, 0.06);
+  transition: all 0.4s ease;
+  animation: pulseBorder 2.5s infinite alternate;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+}
+
+.cta:hover {
+  background: rgba(0, 255, 255, 0.12);
+  border-color: #00ffff;
+  color: white;
+  box-shadow: 0 0 40px rgba(0, 255, 255, 0.3);
+  transform: scale(1.03);
+}
+
+.cta:active {
+  transform: scale(0.98);
+}
+
+/* Spacecraft HUD brackets */
+.hudFrame {
+  position: absolute;
+  inset: 24px;
+  z-index: 4;
+  pointer-events: none;
+}
+
+.cornerTL,
+.cornerTR,
+.cornerBL,
+.cornerBR {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.cornerTL {
+  top: 0;
+  left: 0;
+  border-top: 1.5px solid;
+  border-left: 1.5px solid;
+}
+.cornerTR {
+  top: 0;
+  right: 0;
+  border-top: 1.5px solid;
+  border-right: 1.5px solid;
+}
+.cornerBL {
+  bottom: 0;
+  left: 0;
+  border-bottom: 1.5px solid;
+  border-left: 1.5px solid;
+}
+.cornerBR {
+  bottom: 0;
+  right: 0;
+  border-bottom: 1.5px solid;
+  border-right: 1.5px solid;
+}
+
+/* Left Side Telemetry Logs */
+.telemetryLogs {
+  position: absolute;
+  top: 100px;
+  left: 24px;
+  z-index: 10;
+  font-family: var(--font-mono);
+  font-size: 0.54rem;
+  letter-spacing: 0.12rem;
+  color: rgba(255, 255, 255, 0.35);
+  text-transform: uppercase;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.logLine {
+  display: flex;
+  align-items: center;
+  opacity: 0;
+  animation: logFadeIn 0.5s forwards ease;
+}
+
+.logBullet {
+  color: #00ffff;
+  margin-right: 6px;
+  text-shadow: 0 0 5px rgba(0, 255, 255, 0.5);
+}
+
+.blinkCursor {
+  animation: blink 1.2s infinite;
+}
+
+/* Right Side Telemetry Stats */
+.rightStatus {
+  position: absolute;
+  top: 100px;
+  right: 24px;
+  z-index: 10;
+  font-family: var(--font-mono);
+  font-size: 0.54rem;
+  letter-spacing: 0.12rem;
+  color: rgba(255, 255, 255, 0.35);
+  text-align: right;
+  text-transform: uppercase;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* Rotating target reticle */
+.centerReticle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+  width: clamp(250px, 48vw, 650px);
+  height: clamp(250px, 48vw, 650px);
+  pointer-events: none;
+  opacity: 0.18;
+  mix-blend-mode: screen;
+}
+
+.reticleSvg {
+  width: 100%;
+  height: 100%;
+}
+
+.reticleOuter {
+  fill: none;
+  stroke: #00ffff;
+  stroke-width: 0.45;
+  stroke-dasharray: 4 8;
+  transform-origin: center;
+  animation: spinCW 50s linear infinite;
+}
+
+.reticleInner {
+  fill: none;
+  stroke: #00ffff;
+  stroke-width: 0.35;
+  stroke-dasharray: 18 6;
+}
+
+.crosshair {
+  stroke: #00ffff;
+  stroke-width: 0.6;
+}
+
+.reticleArc {
+  fill: none;
+  stroke: #00ffff;
+  stroke-width: 0.5;
+  transform-origin: center;
+  animation: spinCCW 24s linear infinite;
+}
+
+.bottomCoords {
+  position: absolute;
+  bottom: 32px;
+  left: 24px;
+  z-index: 10;
+  font-family: var(--font-mono);
+  font-size: 0.54rem;
+  letter-spacing: 0.08rem;
+  color: rgba(255, 255, 255, 0.25);
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+}
+
+/* Scroll hint */
+.scrollHint {
+  position: absolute;
+  bottom: 28px;
+  right: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  opacity: 0.35;
+  animation: bounce 2s infinite ease-in-out;
+  z-index: 5;
+}
+
+.scrollLine {
+  width: 1px;
+  height: 32px;
+  background: linear-gradient(to bottom, transparent, white);
+}
+
+.scrollDot {
+  width: 5px;
+  height: 5px;
+  background: white;
+  border-radius: 50%;
+}
+
+/* Animations */
+@keyframes logFadeIn {
+  from {
+    opacity: 0;
+    transform: translateX(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
+@keyframes spinCW {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes spinCCW {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(-360deg);
+  }
+}
+
+@keyframes bounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(8px);
+  }
+}
+
+@keyframes pulseBorder {
+  from {
+    border-color: rgba(0, 255, 255, 0.25);
+    box-shadow: 0 0 15px rgba(0, 255, 255, 0.03);
+  }
+  to {
+    border-color: rgba(0, 255, 255, 0.55);
+    box-shadow: 0 0 25px rgba(0, 255, 255, 0.12);
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .canvasContainer {
+    opacity: 0.7;
+  }
+  .content {
+    padding: 0 16px;
+    gap: 16px;
+  }
+  .label {
+    font-size: clamp(0.52rem, 1.2vw, 0.68rem);
+    color: #00ffff;
+    text-shadow: 0 0 8px rgba(0, 255, 255, 0.5);
+  }
+  .title {
+    font-size: clamp(2.2rem, 13vw, 5rem);
+    line-height: 0.95;
+    text-shadow: 0 0 60px rgba(0, 255, 255, 0.12);
+  }
+  .subtitle {
+    font-size: clamp(0.75rem, 1.3vw, 0.88rem);
+    color: rgba(255, 255, 255, 0.6);
+    line-height: 1.6;
+  }
+  .cta {
+    padding: 12px 32px;
+    font-size: 0.62rem;
+    min-height: 42px;
+    margin-top: 12px;
+  }
+  .hudFrame {
+    inset: 12px;
+    display: none;
+  }
+  .telemetryLogs {
+    top: 80px;
+    left: 16px;
+    font-size: 0.5rem;
+  }
+  .rightStatus {
+    top: 80px;
+    right: 16px;
+    font-size: 0.5rem;
+  }
+  .bottomCoords {
+    bottom: 20px;
+    left: 16px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    font-size: 0.5rem;
+  }
+  .bottomCoords span:nth-child(2) {
+    display: none;
+  }
+  .scrollHint {
+    display: none;
+  }
+  .centerReticle {
+    opacity: 0.1;
+    width: clamp(150px, 35vw, 400px);
+    height: clamp(150px, 35vw, 400px);
+  }
+  .cornerTL,
+  .cornerTR,
+  .cornerBL,
+  .cornerBR {
+    width: 12px;
+    height: 12px;
+  }
+}

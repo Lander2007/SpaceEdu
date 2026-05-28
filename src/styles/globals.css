@@ -1,0 +1,185 @@
+/* ── Google Fonts ───────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,700;1,300;1,400&family=DM+Sans:wght@300;400;500&family=Space+Mono:wght@400;700&display=swap');
+
+:root {
+  /* ── Fonts ─────────────────────────────────── */
+  --font-display: 'Cormorant Garamond', serif;
+  --font-body:    'DM Sans', sans-serif;
+  --font-mono:    'Space Mono', monospace;
+
+  /* ── Space backgrounds ──────────────────────── */
+  --bg-void:       #00000a;
+  --bg-deep:       #020818;
+  --bg-navy:       #040d2e;
+  --bg-nebula:     #0a0520;
+
+  /* ── Planet accent colors ───────────────────── */
+  --c-sun:        #FFB347;
+  --c-mercury:    #A89070;
+  --c-venus:      #E8C47A;
+  --c-earth:      #4B9CD3;
+  --c-mars:       #C1440E;
+  --c-jupiter:    #C88B3A;
+  --c-saturn:     #E4D191;
+  --c-uranus:     #7DE8E8;
+  --c-neptune:    #3F54BA;
+  --c-blackhole:  #9933FF;
+
+  /* ── Nebula glow colors ─────────────────────── */
+  --glow-purple:  rgba(120, 40, 200, 0.25);
+  --glow-blue:    rgba(30,  80, 255, 0.2);
+  --glow-teal:    rgba(0,  180, 200, 0.18);
+  --glow-crimson: rgba(180,  20,  60, 0.2);
+  --glow-gold:    rgba(220, 160,  20, 0.18);
+
+  /* ── Glass UI ───────────────────────────────── */
+  --glass-bg:     rgba(255, 255, 255, 0.04);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-blur:   blur(16px);
+
+  /* ── Spacing ────────────────────────────────── */
+  --nav-height:   60px;
+  --section-pad:  clamp(80px, 10vh, 120px);
+}
+
+/* ── Global reset ───────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0; padding: 0;
+}
+
+html {
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+}
+
+body {
+  background:              var(--bg-void);
+  color:                   white;
+  font-family:             var(--font-body);
+  -webkit-font-smoothing:  antialiased;
+  text-rendering:          optimizeLegibility;
+  overflow-x:              hidden;
+  cursor:                  none;
+  overscroll-behavior:     none; /* Prevent pull-to-refresh on mobile */
+}
+
+/* Mobile: restore cursor */
+@media (hover: none) {
+  body { cursor: auto; }
+}
+
+::selection {
+  background: rgba(100, 150, 255, 0.3);
+  color: white;
+}
+
+/* ── Scrollbar ──────────────────────────────────── */
+::-webkit-scrollbar { width: 3px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.12);
+  border-radius: 2px;
+}
+
+/* ── Section Scroll Snap ────────────────────────── */
+section {
+  scroll-snap-align: start;
+  scroll-snap-stop:  always;
+}
+
+main {
+  scroll-snap-type:   y mandatory;
+  overflow-y:         scroll;
+  height:             100vh;
+  overscroll-behavior:none;
+}
+
+/* Safe area for notched phones */
+@supports (padding: max(0px)) {
+  .bottomNav {
+    padding-bottom: max(20px, env(safe-area-inset-bottom));
+  }
+}
+
+/* ── Animations ─────────────────────────────────── */
+@keyframes pulse {
+  0%,100% { transform: scale(1);   opacity: 0.8; }
+  50%      { transform: scale(1.4); opacity: 1;   }
+}
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0);    }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes bounce {
+  0%,100% { transform: translateX(-50%) translateY(0);   }
+  50%      { transform: translateX(-50%) translateY(8px); }
+}
+@keyframes spin {
+  from { transform: rotate(0deg);   }
+  to   { transform: rotate(360deg); }
+}
+@keyframes shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position:  200% center; }
+}
+@keyframes particleDrift {
+  0%   { transform: translate(0,0)         rotate(0deg);   }
+  25%  { transform: translate(30px,-20px)  rotate(90deg);  }
+  50%  { transform: translate(-20px,-40px) rotate(180deg); }
+  75%  { transform: translate(-30px,-20px) rotate(270deg); }
+  100% { transform: translate(0,0)         rotate(360deg); }
+}
+
+/* ── Film grain overlay ─────────────────────────── */
+.film-grain {
+  position: fixed;
+  top: -50%;
+  left: -50%;
+  right: -50%;
+  bottom: -50%;
+  width: 200%;
+  height: 200%;
+  background: transparent
+    url('data:image/svg+xml,%3Csvg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"%3E%3Cfilter id="noiseFilter"%3E%3CfeTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch"/%3E%3C/filter%3E%3Crect width="100%25" height="100%25" filter="url(%23noiseFilter)"/%3E%3C/svg%3E')
+    repeat;
+  opacity: 0.05;
+  pointer-events: none;
+  z-index: 9999;
+  animation: grain 8s steps(10) infinite;
+}
+
+@keyframes grain {
+  0%, 100% { transform: translate(0, 0); }
+  10% { transform: translate(-5%, -10%); }
+  20% { transform: translate(-15%, 5%); }
+  30% { transform: translate(7%, -25%); }
+  40% { transform: translate(-5%, 25%); }
+  50% { transform: translate(-15%, 10%); }
+  60% { transform: translate(15%, 0%); }
+  70% { transform: translate(0%, 15%); }
+  80% { transform: translate(3%, 35%); }
+  90% { transform: translate(-10%, 10%); }
+}
+
+/* Helper classes */
+.cinematic-glow {
+  text-shadow: 0 0 30px rgba(255, 255, 255, 0.4);
+}
+.cinematic-sub {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.25em;
+  color: rgba(255, 255, 255, 0.4);
+  text-transform: uppercase;
+}
+.sci-fi-border {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(15px);
+  webkitbackdropfilter: blur(15px);
+}

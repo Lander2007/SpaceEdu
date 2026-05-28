@@ -787,11 +787,453 @@ body {
   background: white;
 }
 
-/* ── Responsive tweaks ──────────────────────────────────────── */
+/* ══════════════════════════════════════════════════════════
+   MOBILE & RESPONSIVE OPTIMIZATIONS
+   ══════════════════════════════════════════════════════════ */
+
+/* ── Tablet (1024px and below) ──────────────────────────────── */
 @media (max-width: 1024px) {
   .hero-title { font-size: 72px; }
+  
+  .planet-layout {
+    padding: 0 40px;
+    gap: 40px;
+  }
+  
   .planet-layout.left-planet,
-  .planet-layout.right-planet { grid-template-columns: 1fr; }
+  .planet-layout.right-planet { 
+    grid-template-columns: 1fr;
+    justify-items: center;
+  }
+  
+  .section-name {
+    font-size: 64px !important;
+  }
+  
+  .watermark {
+    font-size: 120px;
+  }
+}
+
+/* ── Mobile Landscape (768px and below) ─────────────────────── */
+@media (max-width: 768px) {
+  /* Hide mouse-based elements on mobile */
+  #nav-pill {
+    right: 16px;
+    padding: 12px 8px;
+    gap: 8px;
+  }
+  
+  .nav-dot {
+    width: 5px;
+    height: 5px;
+  }
+  
+  .nav-dot.active {
+    width: 8px;
+    height: 8px;
+  }
+  
+  .nav-tooltip {
+    display: none; /* Hide tooltips on mobile */
+  }
+  
+  /* Hero section mobile */
+  .hero-title {
+    font-size: 48px;
+    letter-spacing: 0.2em;
+  }
+  
+  .hero-divider {
+    width: 120px;
+  }
+  
+  .hero-sub {
+    font-size: 11px;
+  }
+  
+  /* Planet layouts mobile */
+  .planet-layout {
+    padding: 0 24px;
+    gap: 32px;
+  }
+  
+  .planet-layout.left-planet,
+  .planet-layout.right-planet,
+  .planet-layout.center-planet {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    text-align: center;
+  }
+  
+  .info-col {
+    align-items: center;
+    max-width: 100%;
+  }
+  
+  .section-name {
+    font-size: 48px !important;
+    text-align: center;
+  }
+  
+  .data-table {
+    width: 100%;
+    max-width: 400px;
+  }
+  
+  /* Watermark text smaller */
+  .watermark {
+    font-size: 80px;
+    opacity: 0.05;
+  }
+  
+  /* Mars timeline mobile */
+  .mars-timeline {
+    max-width: 100%;
+  }
+  
+  .timeline-mission {
+    font-size: 12px;
+  }
+  
+  /* Jupiter fact pills mobile */
+  .fact-pills {
+    justify-content: center;
+  }
+  
+  .fact-pill {
+    font-size: 10px;
+    padding: 5px 12px;
+  }
+  
+  /* Saturn rings mobile - simplify */
+  #section-saturn .planet-layout {
+    grid-template-columns: 1fr !important;
+  }
+  
+  /* Horizontal data mobile */
+  .data-horizontal {
+    flex-direction: column;
+    gap: 0;
+    width: 100%;
+  }
+  
+  .data-h-cell {
+    border-right: none;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    padding: 12px 16px;
+  }
+  
+  .data-h-cell:last-child {
+    border-bottom: none;
+  }
+  
+  /* Wind speed display mobile */
+  .wind-speed-big {
+    font-size: 60px;
+  }
+  
+  .wind-unit {
+    font-size: 14px;
+  }
+  
+  /* Edge label mobile */
+  .edge-label {
+    right: 24px;
+    bottom: 30%;
+    font-size: 10px;
+  }
+  
+  .edge-label::before {
+    width: 30px;
+  }
+  
+  /* Void section mobile */
+  .void-top-left,
+  .void-bottom-right {
+    font-size: 40px;
+    padding: 0 24px;
+  }
+  
+  .void-top-left {
+    left: 24px;
+    top: 10%;
+  }
+  
+  .void-bottom-right {
+    right: 24px;
+    bottom: 10%;
+  }
+  
+  .void-footer {
+    flex-direction: column;
+    gap: 12px;
+    font-size: 8px;
+    padding: 0 24px;
+  }
+  
+  /* Milky Way HUD mobile */
+  .galaxy-hud {
+    max-width: 90%;
+    padding: 1rem;
+    margin-top: 1rem;
+  }
+  
+  .hud-buttons {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .hud-btn {
+    width: 100%;
+    justify-content: center;
+    font-size: 0.7rem;
+    padding: 0.4rem 0.7rem;
+  }
+  
+  .hud-details {
+    font-size: 0.75rem;
+    min-height: 60px;
+  }
+  
+  /* Distance counter mobile */
+  .distance-counter {
+    font-size: 10px;
+    padding: 6px 12px;
+  }
+  
+  .distance-counter::before {
+    font-size: 8px;
+  }
+}
+
+/* ── Mobile Portrait (480px and below) ──────────────────────── */
+@media (max-width: 480px) {
+  /* Ultra-compact mobile view */
+  body {
+    cursor: auto; /* Restore default cursor on mobile */
+  }
+  
+  /* Hero section ultra-mobile */
+  .hero-title {
+    font-size: 36px;
+    letter-spacing: 0.15em;
+  }
+  
+  .hero-divider {
+    width: 80px;
+  }
+  
+  .hero-sub {
+    font-size: 10px;
+  }
+  
+  .hero-chevron {
+    bottom: 24px;
+    font-size: 20px;
+  }
+  
+  /* Planet layouts ultra-mobile */
+  .planet-layout {
+    padding: 0 16px;
+    gap: 24px;
+  }
+  
+  .section-name {
+    font-size: 36px !important;
+    line-height: 1.1;
+  }
+  
+  .accent-line,
+  .accent-bar {
+    width: 30px;
+    margin: 12px auto;
+  }
+  
+  .data-table {
+    font-size: 11px;
+  }
+  
+  .data-label {
+    font-size: 9px;
+  }
+  
+  .data-value {
+    font-size: 12px;
+  }
+  
+  .data-row {
+    padding: 10px 0;
+  }
+  
+  /* Section quotes mobile */
+  .section-quote {
+    font-size: 14px !important;
+    max-width: 100% !important;
+  }
+  
+  /* Watermark ultra-mobile */
+  .watermark {
+    font-size: 60px;
+    opacity: 0.03;
+  }
+  
+  /* Mars timeline ultra-mobile */
+  .timeline-year {
+    font-size: 9px;
+  }
+  
+  .timeline-mission {
+    font-size: 11px;
+  }
+  
+  .timeline-dot {
+    width: 12px;
+    height: 12px;
+  }
+  
+  /* Jupiter fact pills ultra-mobile */
+  .fact-pill {
+    font-size: 9px;
+    padding: 4px 10px;
+  }
+  
+  /* Wind speed ultra-mobile */
+  .wind-speed-big {
+    font-size: 48px;
+  }
+  
+  .wind-unit {
+    font-size: 12px;
+  }
+  
+  /* Void section ultra-mobile */
+  .void-top-left,
+  .void-bottom-right {
+    font-size: 28px;
+    padding: 0 16px;
+  }
+  
+  .void-footer {
+    font-size: 7px;
+    gap: 8px;
+  }
+  
+  /* Navigation pill ultra-mobile */
+  #nav-pill {
+    right: 12px;
+    padding: 10px 6px;
+    gap: 6px;
+  }
+  
+  .nav-dot {
+    width: 4px;
+    height: 4px;
+  }
+  
+  .nav-dot.active {
+    width: 7px;
+    height: 7px;
+  }
+  
+  /* Milky Way HUD ultra-mobile */
+  .galaxy-hud {
+    padding: 0.8rem;
+    max-width: 95%;
+  }
+  
+  .hud-subtitle {
+    font-size: 0.6rem;
+    margin-bottom: 0.6rem;
+  }
+  
+  .hud-btn {
+    font-size: 0.65rem;
+    padding: 0.35rem 0.6rem;
+  }
+  
+  .hud-details {
+    font-size: 0.7rem;
+    min-height: 70px;
+  }
+  
+  /* Storm labels mobile */
+  .storm-label {
+    font-size: 8px;
+    right: -10px;
+  }
+  
+  .storm-label-line {
+    width: 20px;
+  }
+  
+  /* Edge label ultra-mobile */
+  .edge-label {
+    font-size: 9px;
+    right: 16px;
+  }
+  
+  /* Tilt diagram mobile */
+  .tilt-diagram {
+    width: 80px;
+    height: 140px;
+  }
+  
+  /* Distance counter ultra-mobile */
+  .distance-counter {
+    font-size: 9px;
+    padding: 5px 10px;
+  }
+}
+
+/* ── Touch device optimizations ─────────────────────────────── */
+@media (hover: none) and (pointer: coarse) {
+  /* Disable hover effects on touch devices */
+  .nav-dot-wrapper:hover .nav-dot:not(.active) {
+    background: rgba(255,255,255,0.2);
+  }
+  
+  .nav-dot-wrapper:hover .nav-tooltip {
+    opacity: 0;
+  }
+  
+  /* Larger touch targets */
+  .nav-dot-wrapper {
+    padding: 4px;
+  }
+  
+  /* Disable parallax on touch devices for better performance */
+  .star-field {
+    transform: none !important;
+  }
+}
+
+/* ── Landscape mobile specific ──────────────────────────────── */
+@media (max-height: 600px) and (orientation: landscape) {
+  .hero-title {
+    font-size: 32px;
+  }
+  
+  .section-name {
+    font-size: 32px !important;
+  }
+  
+  .planet-layout {
+    padding: 0 20px;
+  }
+  
+  .data-table {
+    font-size: 10px;
+  }
+  
+  .hero-chevron {
+    bottom: 16px;
+  }
+  
+  #nav-pill {
+    top: 50%;
+    transform: translateY(-50%) scale(0.8);
+  }
 }
 
 /* ── Cinematic Galaxy + Planets (GSAP ScrollTrigger) ────────── */
@@ -1002,3 +1444,65 @@ body {
   contain: layout style paint;
   isolation: isolate;
 }
+
+/* --- Galactic Explorer HUD --- */
+.galaxy-hud {
+  margin-top: 1.25rem;
+  background: rgba(4, 10, 15, 0.55);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(125, 232, 232, 0.15);
+  border-radius: 14px;
+  padding: 1.2rem;
+  width: 100%;
+  max-width: 540px;
+  text-align: center;
+  box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.8),
+              0 0 20px 0 rgba(125, 232, 232, 0.03);
+  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  z-index: 100;
+  max-height: 400px;
+  opacity: 1;
+  transform: scale(1) translateY(0);
+  overflow: visible;
+}
+.galaxy-hud::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(125, 232, 232, 0.25), transparent);
+  transition: opacity 0.3s ease;
+}
+.galaxy-hud .hud-btn {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  color: #fff;
+  border-radius: 20px;
+  padding: 0.35rem 0.85rem;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.74rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  transition: all 0.25s ease;
+}
+.galaxy-hud .hud-btn:hover {
+  background: rgba(125, 232, 232, 0.06) !important;
+  border-color: rgba(125, 232, 232, 0.25) !important;
+  color: #fff !important;
+  box-shadow: 0 0 10px rgba(125, 232, 232, 0.1) !important;
+}
+.galaxy-hud .hud-btn.active {
+  background: rgba(125, 232, 232, 0.14) !important;
+  border-color: rgba(125, 232, 232, 0.5) !important;
+  color: #fff !important;
+  font-weight: 600 !important;
+  box-shadow: 0 0 14px rgba(125, 232, 232, 0.14) !important;
+}
+.galaxy-hud .hud-btn.active .btn-dot {
+  background: #7de8e8 !important;
+  box-shadow: 0 0 6px 1px #7de8e8 !important;
+}
+
